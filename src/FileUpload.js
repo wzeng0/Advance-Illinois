@@ -1,11 +1,10 @@
 import React from 'react';
 
 const FileUpload = ({ onFileUpload }) => {
-  // Function to handle the file input change event
+  // When a change is made to the uploaded file, get the first file from the input
+  // and call the parent component's file upload handler with the selected file
   const handleFileChange = (event) => {
-    // Get the first file from the input
     const file = event.target.files[0];
-    // Call the parent component's file upload handler with the selected file
     onFileUpload(file);
   };
 

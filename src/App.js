@@ -1,5 +1,6 @@
 import logo from './logo.svg';
 import './App.css';
+import BasicDocument from "./pdf-create";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           Learn React
         </a>
       </header>
+      <BasicDocument />
     </div>
   );
 }

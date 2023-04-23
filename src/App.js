@@ -1,7 +1,9 @@
 import logo from './logo.svg';
 import './App.css';
 import BasicDocument from "./pdf-create";
+//import ReactPDF from '@react-pdf/renderer';
 
+//ReactPDF.render(<BasicDocument />, `${__dirname}/example.pdf`);
 function App() {
   return (
     <div className="App">

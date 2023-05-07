@@ -7,7 +7,7 @@ pdf for Chicago legislators that show data corresponding to each individual's di
 
 ### Built With
 
-* [![React][React.js]][React-url]* 
+* [![React][React.js]][React-url]
 * [![Flask][https://flask.palletsprojects.com/en/2.3.x/]][Flask-url]
 
 ## Getting Started

@@ -27,9 +27,9 @@ This is an example of how to list things you need to use the software and how to
    git clone https://github.com/wzeng0/Advance-Illinois.git
    ```
 2. Go into the react-app folder
-  ```sh
-  cd react-app
-  ```
+   ```sh
+   cd react-app
+   ```
 2. Install NPM packages
    ```sh
    npm install

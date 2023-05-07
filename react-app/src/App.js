@@ -1,40 +1,33 @@
 import React, { useState } from 'react';
-import * as XLSX from 'xlsx'; // Import the xlsx library for parsing Excel files
 import FileUpload from './FileUpload';
-import { Checkbox, FormGroup, FormControlLabel, Button } from '@mui/material';
+import { Checkbox, FormGroup, FormControlLabel, Button, CircularProgress } from '@mui/material';
+
+// Import the Web Worker
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import Worker from 'worker-loader!./fileProcessor.worker';
 
 const App = () => {
-  // Set up state to store the column names
   const [columnNames, setColumnNames] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
+  const [uploadInProgress, setUploadInProgress] = useState(false);
 
-  // Function to handle file uploads from the FileUpload component
+  // Create an instance of the Web Worker
+  const fileProcessorWorker = new Worker();
+
+  // Listen for messages from the Web Worker
+  fileProcessorWorker.addEventListener('message', (event) => {
+    const columnNames = event.data;
+    setColumnNames(columnNames);
+    setUploadInProgress(false);
+  });
+
   const handleFileUpload = (file) => {
-    const reader = new FileReader();
+    setUploadInProgress(true);
 
-    reader.onload = (event) => {
-      // Get the binary string representation of the file's contents
-      // and parse it into an XLSX workbook object
-      const binaryString = event.target.result;
-      const workBook = XLSX.read(binaryString, { type: 'binary' });
-
-      // Retrieve the required sheet from the workbook
-      const sheetName = "House"
-      const sheet = workBook.Sheets[sheetName];
-
-      // Convert the sheet data into an array of JSON objects and get the first row as column names
-      const columnNames = XLSX.utils.sheet_to_json(sheet, { header: 1 })[0];
-      //const csvData = XLSX.utils.sheet_to_csv(sheet);
-
-
-      // Update state with the extracted column names
-      setColumnNames(columnNames);
-    };
-
-    reader.readAsBinaryString(file);
+    // Send the file to the Web Worker for processing
+    fileProcessorWorker.postMessage(file);
   };
 
-  // Function to handle checkbox changes
   const handleCheckboxChange = (event) => {
     if (event.target.checked) {
       setSelectedItems([...selectedItems, event.target.name]);
@@ -43,7 +36,6 @@ const App = () => {
     }
   };
 
-  // Function to handle form submission
   const handleSubmit = (event) => {
     event.preventDefault();
     console.log('Selected Items:', selectedItems);
@@ -53,8 +45,9 @@ const App = () => {
     <div>
       <h1>Excel Column Name Demo</h1>
       <p>Upload the LegSheets Excel workbook to convert the "House" sheet into json. The column names will be listed below after a few seconds.</p>
-      {/* Pass the handleFileUpload function as a prop */}
       <FileUpload onFileUpload={handleFileUpload} />
+
+      {uploadInProgress && <CircularProgress/>}
 
       <form onSubmit={handleSubmit}>
         <FormGroup>

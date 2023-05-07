@@ -65,9 +65,11 @@ const App = () => {
           ))}
         </FormGroup>
 
-        <Button type="submit" variant="contained">
-          Submit
-        </Button>
+        {columnNames.length > 0 && (
+          <Button type="submit" variant="contained">
+            Submit
+          </Button>
+        )}
       </form>
       
     </div>

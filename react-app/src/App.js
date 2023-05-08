@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import FileUpload from './FileUpload';
 import { Checkbox, FormGroup, FormControlLabel, Button, CircularProgress } from '@mui/material';
+import './App.css';
 
 // Import the Web Worker
 // eslint-disable-next-line import/no-webpack-loader-syntax
@@ -43,7 +44,7 @@ const App = () => {
 
   return (
     <div>
-      <h1>Excel Column Name Demo</h1>
+      <h1>Advance Illinois</h1>
       <p>Upload the LegSheets Excel workbook to convert the "House" sheet into json. The column names will be listed below after a few seconds.</p>
       <FileUpload onFileUpload={handleFileUpload} />
 
@@ -65,9 +66,11 @@ const App = () => {
           ))}
         </FormGroup>
 
-        <Button type="submit" variant="contained">
-          Submit
-        </Button>
+        {columnNames.length > 0 && (
+          <Button type="submit" variant="contained">
+            Submit
+          </Button>
+        )}
       </form>
       
     </div>

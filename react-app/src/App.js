@@ -1,32 +1,33 @@
 import React, { useState } from 'react';
 import FileUpload from './FileUpload';
 import { Checkbox, FormGroup, FormControlLabel, Button, CircularProgress } from '@mui/material';
+import axios from 'axios';
 import './App.css';
-
-// Import the Web Worker
-// eslint-disable-next-line import/no-webpack-loader-syntax
-import Worker from 'worker-loader!./fileProcessor.worker';
 
 const App = () => {
   const [columnNames, setColumnNames] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
   const [uploadInProgress, setUploadInProgress] = useState(false);
 
-  // Create an instance of the Web Worker
-  const fileProcessorWorker = new Worker();
-
-  // Listen for messages from the Web Worker
-  fileProcessorWorker.addEventListener('message', (event) => {
-    const columnNames = event.data;
-    setColumnNames(columnNames);
-    setUploadInProgress(false);
-  });
-
-  const handleFileUpload = (file) => {
+  const handleFileUpload = async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    
     setUploadInProgress(true);
 
-    // Send the file to the Web Worker for processing
-    fileProcessorWorker.postMessage(file);
+    try {
+      const response = await axios.post('http://localhost:8000/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      setColumnNames(response.data.columnNames);
+    } catch (error) {
+      console.error('Error uploading file:', error);
+    } finally {
+      setUploadInProgress(false);
+    }
   };
 
   const handleCheckboxChange = (event) => {
@@ -37,9 +38,13 @@ const App = () => {
     }
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log('Selected Items:', selectedItems);
+    try {
+      await axios.post('http://localhost:8000/selectedColumns', selectedItems);
+    } catch (error) {
+      console.error('Error submitting selected columns:', error);
+    }
   };
 
   return (
@@ -72,7 +77,6 @@ const App = () => {
           </Button>
         )}
       </form>
-      
     </div>
   );
 };

@@ -10,6 +10,7 @@ const App = () => {
   const [uploadInProgress, setUploadInProgress] = useState(false);
 
   const handleFileUpload = async (file) => {
+    // File is received as an argument
     const formData = new FormData();
     formData.append('file', file);
     
@@ -32,8 +33,10 @@ const App = () => {
 
   const handleCheckboxChange = (event) => {
     if (event.target.checked) {
+      // If checked, add the item to the selected items array
       setSelectedItems([...selectedItems, event.target.name]);
     } else {
+      // Otherwise, remove the item from the array
       setSelectedItems(selectedItems.filter((item) => item !== event.target.name));
     }
   };

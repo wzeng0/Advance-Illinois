@@ -3,13 +3,10 @@ import pandas as pd
 import io, sys
 from PyPDF2 import PdfMerger, PdfReader
 
-###include first page
-
 ###will replace with different variables when iterating through the dataframes
 replst = ["ABDELNASSER RASHID1"]
-
 df = pd.DataFrame(
-    {
+    {  
         "SCHOOL DISTRICT": ["Jules", "Mary", "Carlson", "Lucas"],
         "ENROLLMENT": ["Smith", "Ramos", "Banks", "Cimon"],
         "% OF FULL FUNDING": ["34%", "45%", "19%", "31%"],
@@ -17,7 +14,6 @@ df = pd.DataFrame(
         "PER PUPIL GAP TO FULL FUNDING": ["San Juan", "Orlando", "Los Angeles", "Saint-Mahturin-sur-Loire"]
     }
 )
-
 
 class PDF(FPDF):
     """
@@ -46,32 +42,6 @@ class PDF(FPDF):
             align="C",
             fill=True,
         )
-    
-    """
-    def table_container(self, df):
-        self.set_xy(17.25, 41)
-
-        df = df.applymap(str)  # Convert all data inside dataframe into string type
-        columns = [list(df)]  # Get list of dataframe columns
-        rows = df.values.tolist()  # Get list of dataframe rows
-        data = columns + rows  # Combine columns and rows in one list
-        self.add_font(family='GothamLight', style='', fname='pdf-creation/font/GothamBold.ttf', uni='DEPRECATED')
-        self.set_font('GothamLight', '', 12)
-        self.set_text_color(0, 0, 0)
-        
-        with self.table(borders_layout="MINIMAL",
-                       cell_fill_color=200,  # grey
-                       cell_fill_mode="ROWS",
-                       line_height=self.font_size * 2.5,
-                       text_align="CENTER",
-                       width=160) as table:
-            for data_row in data:
-                row = table.row()
-                for datum in data_row:
-                    row.cell(datum)
-
-        #headings_style = FontFace(emphasis="BOLD", color=255, fill_color=(255, 100, 0))
-    """
 
     def print_elements(self):
         """
@@ -128,21 +98,4 @@ for repname in replst:
     #downloading pdf locally with representative name
     output = pdf.output('{name}.pdf'.format(name=repname))
 
-###merging pages - this doesn't work even for an example pdf
-"""
-IN_FILEPATH = sys.argv[1]
-OUT_FILEPATH = sys.argv[2]
-ON_PAGE_INDEX = 2  # Index at which the page will be inserted (starts at zero)
-
-def new_page():
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_font('times', 'B', 19)
-    pdf.text(50, 10, 'Hello World!')
-    return io.BytesIO(pdf.output())
-
-merger = PdfMerger()
-merger.merge(position=0, fileobj=IN_FILEPATH)
-merger.merge(position=ON_PAGE_INDEX, fileobj=new_page())
-merger.write(OUT_FILEPATH)
-"""
+###Merge pages here

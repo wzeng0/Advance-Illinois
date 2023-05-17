@@ -8,6 +8,7 @@ const App = () => {
   const [columnNames, setColumnNames] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
   const [uploadInProgress, setUploadInProgress] = useState(false);
+  const [fileUuid, setFileUuid] = useState(null);
 
   const handleFileUpload = async (file) => {
     // File is received as an argument
@@ -24,6 +25,7 @@ const App = () => {
       });
 
       setColumnNames(response.data.columnNames);
+      setFileUuid(response.data.uuid);
     } catch (error) {
       console.error('Error uploading file:', error);
     } finally {
@@ -44,9 +46,18 @@ const App = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      await axios.post('http://localhost:8000/selectedColumns', selectedItems);
+      // Submit the selected columns and uuid to the process endpoint
+      console.log('Submitting user selection', selectedItems, fileUuid)
+      await axios.post('http://localhost:8000/process', {
+        columns: selectedItems, 
+        uuid: fileUuid
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
     } catch (error) {
-      console.error('Error submitting selected columns:', error);
+      console.error('Error submitting user selection', error);
     }
   };
 

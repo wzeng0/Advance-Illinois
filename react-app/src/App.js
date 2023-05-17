@@ -50,6 +50,7 @@ const App = () => {
   return (
     <div>
       <h1>Advance Illinois</h1>
+      <hr></hr>
       <p>Upload the LegSheets Excel workbook to convert the "House" sheet into json. The column names will be listed below after a few seconds.</p>
       <FileUpload onFileUpload={handleFileUpload} />
 

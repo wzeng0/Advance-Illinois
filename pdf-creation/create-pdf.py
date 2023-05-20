@@ -7,11 +7,11 @@ from PyPDF2 import PdfMerger, PdfReader
 replst = ["ABDELNASSER RASHID1"]
 df = pd.DataFrame(
     {  
-        "SCHOOL DISTRICT": ["Jules", "Mary", "Carlson", "Lucas"],
-        "ENROLLMENT": ["Smith", "Ramos", "Banks", "Cimon"],
-        "% OF FULL FUNDING": ["34%", "45%", "19%", "31%"],
-        "TOTAL GAP TO FULL FUNDING": ["San Juan", "Orlando", "Los Angeles", "Saint-Mahturin-sur-Loire"],
-        "PER PUPIL GAP TO FULL FUNDING": ["San Juan", "Orlando", "Los Angeles", "Saint-Mahturin-sur-Loire"]
+        "SCHOOL DISTRICT": ["Jules", "Mary", "Carlson", "Lucas", "sample5", "sample6"],
+        "ENROLLMENT": ["Smith", "Ramos", "Banks", "Cimon", "sample5", "sample6"],
+        "% OF FULL FUNDING": ["4%", "67%", "70%", "85%", "92%", "121%"],
+        "TOTAL GAP TO FULL FUNDING": ["San Juan", "Orlando", "Los Angeles", "Saint-Mahturin-sur-Loire", "sample5", "sample6"],
+        "PER PUPIL GAP TO FULL FUNDING": ["San Juan", "Orlando", "Los Angeles", "Saint-Mahturin-sur-Loire", "sample5", "sample6"]
     }
 )
 
@@ -69,9 +69,16 @@ for repname in replst:
     #TABLE#
     df = df.applymap(str)  # Convert all data inside dataframe into string type
 
-    columns = [list(df)]  # Get list of dataframe columns
+    columns = [list(df)]  # Get list of dataframe columns                                                      
     rows = df.values.tolist()  # Get list of dataframe rows
     data = columns + rows  # Combine columns and rows in one list
+
+    #gets col idx of % OF FULL FUNDING
+    #using try and except to make sure value error doesn't break code?
+    try:
+        percent_col_idx = columns[0].index("% OF FULL FUNDING") 
+    except ValueError as ve:
+        print("must have column % OF FULL FUNDING")
 
     #add fonts
     pdf.add_font(family='GothamLight', style='', fname='pdf-creation/font/GothamLight.ttf', uni='DEPRECATED')
@@ -87,15 +94,42 @@ for repname in replst:
                 text_align="CENTER",
                 width=176) as table:
 
-        for data_row in data:
+        for row_idx, data_row in enumerate(data):
+            if 0 < row_idx:
+                row_lst = rows[row_idx - 1] #attribute the row to next index
             row = table.row()
             for datum in data_row:
-                row.cell(datum)
+                print("inside second loop", row_idx)
+                #creating colors
+                if 0 < row_idx:
+                    #percent total funding as an integer
+                    percent = int(row_lst[percent_col_idx][:-1]) 
+                    print("percent:", percent)
+                else:
+                    percent = "moot"
+                if percent == "moot": ### I know this is bad style so fix later
+                    break
+                elif percent < 60: 
+                    pdf.set_fill_color(172, 41, 0)
+                elif 60 <= percent < 70:
+                    pdf.set_fill_color(245, 131, 76)
+                elif 70 <= percent < 80:
+                    pdf.set_fill_color(249, 173, 86)
+                elif 80 <= percent < 90:
+                    pdf.set_fill_color(240, 199, 110)
+                elif 90 <= percent < 100:
+                    pdf.set_fill_color(154, 198, 151)
+                else:
+                    pdf.set_fill_color(86, 181, 168)
 
+                row.cell(datum)
+                    
+                
+                    
     ###add support for different headings when printing out the table in subsequent 
     #pages
 
     #downloading pdf locally with representative name
-    output = pdf.output('{name}.pdf'.format(name=repname))
+    pdf.output('{name}.pdf'.format(name=repname))
 
 ###Merge pages here

@@ -42,6 +42,10 @@ class PDF(FPDF):
             align="C",
             fill=True,
         )
+        self.ln(10)
+        self.ln(10)
+        self.ln(10)
+        self.ln(5)
 
     def print_elements(self):
         """
@@ -51,10 +55,6 @@ class PDF(FPDF):
         self.set_line_width(17.5)
         self.header()
         ###these may be unnecessary if we create separate image for header
-        self.ln(10)
-        self.ln(10)
-        self.ln(10)
-        self.ln(5)
 
 #repeats pdf creation
 for repname in replst:
@@ -89,7 +89,7 @@ for repname in replst:
     #constructing table, need to add more parameters
     with pdf.table(###find a way to adjust custom widths
                 ###cell_fill_mode="ROWS",
-                line_height=pdf.font_size * 10,
+                line_height=pdf.font_size * 1.5,
                 text_align="CENTER",
                 width=176) as table:
 

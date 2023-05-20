@@ -54,6 +54,8 @@ class LegSheet:
             for name in house_names:
                 empty_df = pd.DataFrame({})
                 empty_df = self.house_df(name)
+                ### I don't know if the following code works
+                float(empty_df["% OF FULL \nFUNDING"][:-1])
                 empty_df.sort_values(by = ["% OF FULL \nFUNDING"], ascending = True)
                 house_df_list.append(empty_df)
 
@@ -73,8 +75,12 @@ class LegSheet:
             sen_df_list = []
             for name in sen_names:
                 empty_df = pd.DataFrame({})
+                ### I don't know if the following code works
+                float(empty_df["% OF FULL \nFUNDING"][:-1])
                 empty_df = self.sen_df(name).sort_values(by = ["% OF FULL \nFUNDING"], ascending = True)
+                print(empty_df)
                 sen_df_list.append(empty_df)
+
 
             '''
             chicago_sen = cps_senators_df['Senator'].values[0]

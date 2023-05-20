@@ -34,7 +34,7 @@ class LegSheet:
         try:
             # Rename 'Type' column to 'District' and sort by 'District'
             # Below integrated from CSV processing team
-            columns = columns + ['Type', 'SCHOOL DISTRICT']
+            columns = columns + ['New House Assignment', 'SCHOOL DISTRICT']
             self.leg_house_df = self.leg_house_df[columns].rename(columns={"Type": "District"}).sort_values(by="District")
             self.ga_house_df = self.ga_house_df[['Representative', 'District']]
 
@@ -54,9 +54,10 @@ class LegSheet:
             for name in house_names:
                 empty_df = pd.DataFrame({})
                 empty_df = self.house_df(name)
+                empty_df.sort_values(by = ["% OF FULL \nFUNDING"], ascending = True)
                 house_df_list.append(empty_df)
 
-            self.leg_senate_df = self.leg_senate_df[columns].rename(columns={"Type": "District"}).sort_values(by="District")
+            self.leg_senate_df = self.leg_senate_df[columns].rename(columns={"New Senate Assignment": "District"}).sort_values(by="District")
             self.ga_senate_df = self.ga_senate_df[['Senator', 'District']]
             sen_names = self.ga_senate_df['Senator'].values
             self.senators = pd.merge(self.ga_senate_df, self.leg_senate_df, on='District')
@@ -72,7 +73,7 @@ class LegSheet:
             sen_df_list = []
             for name in sen_names:
                 empty_df = pd.DataFrame({})
-                empty_df = self.sen_df(name)
+                empty_df = self.sen_df(name).sort_values(by = ["% OF FULL \nFUNDING"], ascending = True)
                 sen_df_list.append(empty_df)
 
             '''

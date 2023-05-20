@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from pdf import PDF, PDFCreator
 import pandas as pd
 import uuid
 
@@ -11,6 +12,7 @@ class LegSheet:
         self.ga_senate_df = None
         self.house = None
         self.senators = None
+        self.rep_names = None
     
     def upload_leg(self, df):
         # Check for sheet_name 'House' or 'Senate'
@@ -41,10 +43,12 @@ class LegSheet:
             self.house = pd.merge(self.ga_house_df, self.leg_house_df, on='District')
             self.house = self.house.drop(['District'], axis=1).drop_duplicates()
 
+            '''
             cps_house = self.house.loc[self.house['SCHOOL DISTRICT'] == 'CITY OF CHICAGO SCHOOL DIST 299']
             cps_house_index = self.house.loc[self.house['SCHOOL DISTRICT'] == 'CITY OF CHICAGO SCHOOL DIST 299'].index
             cps_house_df = cps_house
             self.house = self.house.drop(cps_house_index)
+            '''
 
             house_df_list = []
             for name in house_names:
@@ -58,10 +62,12 @@ class LegSheet:
             self.senators = pd.merge(self.ga_senate_df, self.leg_senate_df, on='District')
             self.senators = self.senators.drop(['District'], axis=1).drop_duplicates()
 
+            '''
             cps_senators = self.senators.loc[self.senators['SCHOOL DISTRICT'] == 'CITY OF CHICAGO SCHOOL DIST 299']
             cps_senators_index = self.senators.loc[self.senators['SCHOOL DISTRICT'] == 'CITY OF CHICAGO SCHOOL DIST 299'].index
             cps_senators_df = cps_senators
             self.senators = self.senators.drop(cps_senators_index)
+            '''
 
             sen_df_list = []
             for name in sen_names:
@@ -69,10 +75,23 @@ class LegSheet:
                 empty_df = self.sen_df(name)
                 sen_df_list.append(empty_df)
 
+            '''
             chicago_sen = cps_senators_df['Senator'].values[0]
             chicago_combined = cps_house_df
             chicago_combined['Senator'] = chicago_sen
+            print('chicago_combined')
             print(chicago_combined)
+            '''
+
+            # Combine sen_names and house_names into one list
+            self.rep_names = house_names.tolist() + sen_names.tolist()
+            
+            house_df_dict = {name: self.house_df(name) for name in house_names}
+            sen_df_dict = {name: self.sen_df(name) for name in sen_names}
+            rep_dict = {**house_df_dict, **sen_df_dict}
+
+            pdf_creator = PDFCreator(rep_dict)
+            pdf_creator.create_pdf()
 
         except Exception as e:
             print(f'Error processing data: {e}')
@@ -85,6 +104,9 @@ class LegSheet:
     def sen_df(self, name):
         '''takes senator name and returns their info from senate dataframe'''
         return self.senators.loc[self.senators['Senator'] == name]
+    
+    #def create_pdf(self):
+        #pdf_creator = PDFCreator(df, replst)
 
     def cleanup(self):
         # TODO: Implement cleanup logic

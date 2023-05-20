@@ -63,7 +63,6 @@ async def process_data(data: dict):
     try:
         sessionUuid = data.get('sessionUuid')
         columns = data.get('columns', [])
-        print(columns)
         
         # Retrieve the LegSheet object using the uuid provided by the user
         leg_sheet = session.get_sheet(sessionUuid)

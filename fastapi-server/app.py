@@ -33,6 +33,10 @@ def new_form():
 async def upload(file: UploadFile = Form(...), sessionUuid: str = Form(...)):
     # Ensure the uploaded file is an Excel spreadsheet
     if file.filename.endswith('.xlsx'):
+        # df = pd.read_excel(await file.read(), sheet_name=None)
+        # leg_sheet = session.get_sheet(sessionUuid)
+        # leg_sheet.upload_leg(df)
+        # return {"status": "success"}
         try:
             df = pd.read_excel(await file.read(), sheet_name=None)
             leg_sheet = session.get_sheet(sessionUuid)

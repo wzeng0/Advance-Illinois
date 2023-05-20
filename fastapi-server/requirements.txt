@@ -4,3 +4,5 @@ fpdf
 pandas
 PyPDF2
 typing
+python-multipart
+openpyxl

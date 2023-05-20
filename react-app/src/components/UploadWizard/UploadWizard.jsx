@@ -14,9 +14,8 @@ import axios from "axios";
 
 const steps = ["Upload Sheets", "Select Columns", "Download"];
 const columnNames = [
-  "SCHOOL DISTRICT",
   "ENROLLMENT",
-  "% OF FULL FUNDING",
+  "% OF FULL \nFUNDING",
   "TOTAL GAP TO FULL FUNDING",
   "PER PUPIL GAP TO FULL FUNDING",
 ];
@@ -53,7 +52,7 @@ const UploadWizard = ({ sessionUuid }) => {
         "http://localhost:8000/process",
         {
           columns: selectedItems,
-          uuid: sessionUuid,
+          sessionUuid: sessionUuid,
         },
         {
           headers: {

@@ -61,16 +61,15 @@ async def upload(file: UploadFile = Form(...), sessionUuid: str = Form(...)):
 @app.post("/process")
 async def process_data(data: dict):
     try:
-        print('Processing data...')
-        uuid = data.get('uuid')
+        sessionUuid = data.get('sessionUuid')
         columns = data.get('columns', [])
         print(columns)
         
         # Retrieve the LegSheet object using the uuid provided by the user
-        leg_sheet = session.get_sheet(uuid)
+        leg_sheet = session.get_sheet(sessionUuid)
         if leg_sheet:
             leg_sheet.process(columns)
-            session.delete_sheet(uuid)
+            session.delete_sheet(sessionUuid)
             return {"status": "success"}
         else:
             raise HTTPException(status_code=404, detail="File not found.")

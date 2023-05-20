@@ -35,7 +35,7 @@ class LegSheet:
             # Rename 'Type' column to 'District' and sort by 'District'
             # Below integrated from CSV processing team
             columns = columns + ['New House Assignment', 'SCHOOL DISTRICT']
-            self.leg_house_df = self.leg_house_df[columns].rename(columns={"Type": "District"}).sort_values(by="District")
+            self.leg_house_df = self.leg_house_df[columns].rename(columns={'New House Assignment': "District"}).sort_values(by="District")
             self.ga_house_df = self.ga_house_df[['Representative', 'District']]
 
             house_names = self.ga_house_df['Representative'].values
@@ -55,8 +55,8 @@ class LegSheet:
                 empty_df = pd.DataFrame({})
                 empty_df = self.house_df(name)
                 ### I don't know if the following code works
-                float(empty_df["% OF FULL \nFUNDING"][:-1])
                 empty_df.sort_values(by = ["% OF FULL \nFUNDING"], ascending = True)
+                print(empty_df.columns.values)
                 house_df_list.append(empty_df)
 
             self.leg_senate_df = self.leg_senate_df[columns].rename(columns={"New Senate Assignment": "District"}).sort_values(by="District")

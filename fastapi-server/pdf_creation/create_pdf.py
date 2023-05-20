@@ -113,7 +113,7 @@ def final_pdf(repname, df):
                 #creating colors
                 if 0 < row_idx:
                     #percent total funding as an integer
-                    percent = int(row_lst[percent_col_idx][:-1]) 
+                    percent = float(row_lst[percent_col_idx][:-1]) 
                 else:
                     percent = "moot"
                 

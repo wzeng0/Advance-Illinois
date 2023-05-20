@@ -70,6 +70,7 @@ async def process_data(data: dict):
         
         # Retrieve the LegSheet object using the uuid provided by the user
         leg_sheet = session.get_sheet(sessionUuid)
+        print(leg_sheet)
         if leg_sheet:
             leg_sheet.process(columns)
             session.delete_sheet(sessionUuid)

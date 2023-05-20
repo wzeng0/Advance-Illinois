@@ -54,7 +54,6 @@ class PDF(FPDF):
         self.add_page()
         self.set_line_width(17.5)
         self.header()
-        ###these may be unnecessary if we create separate image for header
 
 #repeats pdf creation
 for repname in replst:
@@ -123,28 +122,19 @@ for repname in replst:
                     
                 ###colors are a little sus so ill change them later
                 ###also will need to change bg img
-                    
-    ###change page break behavior
 
 #saving file locally
 #pdf.output('{name}.pdf'.format(name=repname))
 
-def second_page(): #somehow gives an empty file
+def second_page(): 
     return io.BytesIO(pdf.output())
 
 ###Merge pages here
 
 IN_FILEPATH = "pdf-creation/FY_page_1.pdf"
-ON_PAGE_INDEX = 0  # Index at which the page will be inserted (starts at zero)
-def new_page():
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_font('times', 'B', 19)
-    pdf.text(50, 10, 'Hello World!')
-    return io.BytesIO(pdf.output())
+ON_PAGE_INDEX = 1  # Index at which the page will be inserted (starts at zero)
+
 merger = PdfMerger()
 merger.merge(position=0, fileobj=IN_FILEPATH)
 merger.merge(position=ON_PAGE_INDEX, fileobj=second_page())
-merger.write("F") #saves merged thing as txt
-
-pdf.output("final.pdf") #not printing out the right thing...
+merger.write('{name}.pdf'.format(name=repname))

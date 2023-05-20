@@ -90,8 +90,11 @@ class LegSheet:
             sen_df_dict = {name: self.sen_df(name) for name in sen_names}
             rep_dict = {**house_df_dict, **sen_df_dict}
 
-            pdf_creator = PDFCreator(rep_dict)
-            pdf_creator.create_pdf()
+            print('rep_dict')
+            print(rep_dict)
+
+            #pdf_creator = PDFCreator(rep_dict)
+            #pdf_creator.create_pdf()
 
         except Exception as e:
             print(f'Error processing data: {e}')

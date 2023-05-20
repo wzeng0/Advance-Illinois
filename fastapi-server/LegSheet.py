@@ -93,14 +93,14 @@ class LegSheet:
             # Combine sen_names and house_names into one list
             self.rep_names = house_names.tolist() + sen_names.tolist()
             
-            house_df_dict = {name: self.house_df(name) for name in house_names}
+            house_df_dict = {name: self.house_df(name) for name in house_names[:2]}
             sen_df_dict = {name: self.sen_df(name) for name in sen_names}
             rep_dict = {**house_df_dict, **sen_df_dict}
 
             print('rep_dict')
             print(rep_dict)
 
-            create_all_pdf(rep_dict)
+            create_all_pdf(house_df_dict) #creates 2 pdfs for testing purposes
 
         except Exception as e:
             print(f'Error processing data: {e}')

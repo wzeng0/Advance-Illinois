@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from pdf import PDF, PDFCreator
+from pdf_creation.create_pdf import create_all_pdf
 import pandas as pd
 import uuid
 
@@ -93,8 +93,7 @@ class LegSheet:
             print('rep_dict')
             print(rep_dict)
 
-            #pdf_creator = PDFCreator(rep_dict)
-            #pdf_creator.create_pdf()
+            create_all_pdf(rep_dict)
 
         except Exception as e:
             print(f'Error processing data: {e}')
@@ -108,8 +107,8 @@ class LegSheet:
         '''takes senator name and returns their info from senate dataframe'''
         return self.senators.loc[self.senators['Senator'] == name]
     
-    #def create_pdf(self):
-        #pdf_creator = PDFCreator(df, replst)
+    # def create_pdf(self):
+    #     pdf_creator = final_pdf()
 
     def cleanup(self):
         # TODO: Implement cleanup logic

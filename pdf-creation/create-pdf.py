@@ -23,6 +23,7 @@ class PDF(FPDF):
         """
         Creates separate formatting for header
         """
+        self.image('pdf-creation/samplepdf-image.png', x = 0, y = 0, w = 210, h = 297)
         self.add_font(family='Gotham', style='B', fname='pdf-creation/font/GothamBold.ttf', uni='DEPRECATED')
         self.set_font("Gotham", "B", 12)
         self.set_text_color(240, 86.5, 41)
@@ -47,7 +48,6 @@ class PDF(FPDF):
         Prints header, background, and line breaks onto page
         """
         self.add_page()
-        self.image('pdf-creation/samplepdf-image.png', x = 0, y = 0, w = 210, h = 297)
         self.set_line_width(17.5)
         self.header()
         ###these may be unnecessary if we create separate image for header
@@ -89,7 +89,7 @@ for repname in replst:
     #constructing table, need to add more parameters
     with pdf.table(###find a way to adjust custom widths
                 ###cell_fill_mode="ROWS",
-                line_height=pdf.font_size * 1.5,
+                line_height=pdf.font_size * 10,
                 text_align="CENTER",
                 width=176) as table:
 

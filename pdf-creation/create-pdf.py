@@ -27,7 +27,6 @@ class PDF(FPDF):
         self.set_font("Gotham", "B", 12)
         self.set_text_color(240, 86.5, 41)
         self.set_fill_color(255, 255, 255)
-        #no clue why but this also sets the borders of the table
         self.set_line_width(0.01)
         width = self.get_string_width(self.title)
         self.set_xy(17.25, 41)
@@ -99,37 +98,53 @@ for repname in replst:
                 row_lst = rows[row_idx - 1] #attribute the row to next index
             row = table.row()
             for datum in data_row:
-                print("inside second loop", row_idx)
                 #creating colors
                 if 0 < row_idx:
                     #percent total funding as an integer
                     percent = int(row_lst[percent_col_idx][:-1]) 
-                    print("percent:", percent)
                 else:
                     percent = "moot"
-                if percent == "moot": ### I know this is bad style so fix later
-                    break
-                elif percent < 60: 
-                    pdf.set_fill_color(172, 41, 0)
-                elif 60 <= percent < 70:
-                    pdf.set_fill_color(245, 131, 76)
-                elif 70 <= percent < 80:
-                    pdf.set_fill_color(249, 173, 86)
-                elif 80 <= percent < 90:
-                    pdf.set_fill_color(240, 199, 110)
-                elif 90 <= percent < 100:
-                    pdf.set_fill_color(154, 198, 151)
-                else:
-                    pdf.set_fill_color(86, 181, 168)
-
+                
+                if percent != "moot": ### I know this is bad style so fix later
+                    if percent < 60: 
+                        pdf.set_fill_color(172, 41, 0)
+                    elif 60 <= percent < 70:
+                        pdf.set_fill_color(245, 131, 76)
+                    elif 70 <= percent < 80:
+                        pdf.set_fill_color(249, 173, 86)
+                    elif 80 <= percent < 90:
+                        pdf.set_fill_color(240, 199, 110)
+                    elif 90 <= percent < 100:
+                        pdf.set_fill_color(154, 198, 151)
+                    else:
+                        pdf.set_fill_color(86, 181, 168)
+                
                 row.cell(datum)
                     
-                
+                ###colors are a little sus so ill change them later
+                ###also will need to change bg img
                     
-    ###add support for different headings when printing out the table in subsequent 
-    #pages
+    ###change page break behavior
 
-    #downloading pdf locally with representative name
-    pdf.output('{name}.pdf'.format(name=repname))
+#saving file locally
+#pdf.output('{name}.pdf'.format(name=repname))
+
+def second_page(): #somehow gives an empty file
+    return io.BytesIO(pdf.output())
 
 ###Merge pages here
+
+IN_FILEPATH = "pdf-creation/FY_page_1.pdf"
+ON_PAGE_INDEX = 0  # Index at which the page will be inserted (starts at zero)
+def new_page():
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font('times', 'B', 19)
+    pdf.text(50, 10, 'Hello World!')
+    return io.BytesIO(pdf.output())
+merger = PdfMerger()
+merger.merge(position=0, fileobj=IN_FILEPATH)
+merger.merge(position=ON_PAGE_INDEX, fileobj=second_page())
+merger.write("F") #saves merged thing as txt
+
+pdf.output("final.pdf") #not printing out the right thing...

@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+fpdf
+pandas
+PyPDF2
+typing

@@ -10,6 +10,7 @@ import {
   Step,
   StepLabel,
 } from "@mui/material";
+import { ColorlibConnector, ColorlibStepIcon } from "./styles";
 import axios from "axios";
 
 const steps = ["Upload Sheets", "Select Columns", "Download"];
@@ -68,10 +69,17 @@ const UploadWizard = ({ sessionUuid }) => {
 
   return (
     <div>
-      <Stepper activeStep={activeStep}>
+      <Stepper activeStep={activeStep} connector={<ColorlibConnector />}>
         {steps.map((label) => (
           <Step key={label}>
-            <StepLabel>{label}</StepLabel>
+            <StepLabel
+              StepIconComponent={ColorlibStepIcon}
+              sx={{
+                "& .MuiStepLabel-label": { color: "#fff" },
+              }}
+            >
+              {label}
+            </StepLabel>
           </Step>
         ))}
       </Stepper>

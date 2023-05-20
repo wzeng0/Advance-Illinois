@@ -3,18 +3,6 @@ import pandas as pd
 import io, sys
 from PyPDF2 import PdfMerger, PdfReader
 
-###will replace with different variables when iterating through the dataframes
-replst = ["ABDELNASSER RASHID1"]
-df = pd.DataFrame(
-    {  
-        "SCHOOL DISTRICT": ["Jules", "Mary", "Carlson", "Lucas", "sample5", "sample6"],
-        "ENROLLMENT": ["Smith", "Ramos", "Banks", "Cimon", "sample5", "sample6"],
-        "% OF FULL FUNDING": ["4%", "67%", "70%", "85%", "92%", "121%"],
-        "TOTAL GAP TO FULL FUNDING": ["San Juan", "Orlando", "Los Angeles", "Saint-Mahturin-sur-Loire", "sample5", "sample6"],
-        "PER PUPIL GAP TO FULL FUNDING": ["San Juan", "Orlando", "Los Angeles", "Saint-Mahturin-sur-Loire", "sample5", "sample6"]
-    }
-)
-
 class PDF(FPDF):
     """
     Class for representing PDF
@@ -23,8 +11,8 @@ class PDF(FPDF):
         """
         Creates separate formatting for header
         """
-        self.image('pdf-creation/samplepdf-image.png', x = 0, y = 0, w = 210, h = 297)
-        self.add_font(family='Gotham', style='B', fname='pdf-creation/font/GothamBold.ttf', uni='DEPRECATED')
+        self.image('pdf_creation/samplepdf-image.png', x = 0, y = 0, w = 210, h = 297)
+        self.add_font(family='Gotham', style='B', fname='pdf_creation/font/GothamBold.ttf', uni='DEPRECATED')
         self.set_font("Gotham", "B", 12)
         self.set_text_color(240, 86.5, 41)
         self.set_fill_color(255, 255, 255)
@@ -55,9 +43,34 @@ class PDF(FPDF):
         self.set_line_width(17.5)
         self.header()
 
-#repeats pdf creation
-for repname in replst:
-    #creates and prints pdf
+#saving file locally
+#pdf.output('{name}.pdf'.format(name=repname))
+
+def second_page(pdf): 
+    return io.BytesIO(pdf.output())
+
+###Merge pages here
+
+def create_all_pdf(dict):
+    for repname, df in dict.items():
+        final_pdf(repname, df)
+
+
+def final_pdf(repname, df):
+    ###will replace with different variables when iterating through the dataframes
+    # replst = ["ABDELNASSER RASHID1"]
+    # df = pd.DataFrame(
+    #     {  
+    #         "SCHOOL DISTRICT": ["Jules", "Mary", "Carlson", "Lucas", "sample5", "sample6"],
+    #         "ENROLLMENT": ["Smith", "Ramos", "Banks", "Cimon", "sample5", "sample6"],
+    #         "% OF FULL FUNDING": ["4%", "67%", "70%", "85%", "92%", "121%"],
+    #         "TOTAL GAP TO FULL FUNDING": ["San Juan", "Orlando", "Los Angeles", "Saint-Mahturin-sur-Loire", "sample5", "sample6"],
+    #         "PER PUPIL GAP TO FULL FUNDING": ["San Juan", "Orlando", "Los Angeles", "Saint-Mahturin-sur-Loire", "sample5", "sample6"]
+    #     }
+    # )
+        #repeats pdf creation
+    # for repname in replst:
+        #creates and prints pdf
     pdf = PDF(orientation = 'P', unit = 'mm', format = 'A4')
     pdf.set_title("REPRESENTATIVE {name}".format(name = repname))
     pdf.print_elements()
@@ -79,8 +92,8 @@ for repname in replst:
         print("must have column % OF FULL FUNDING")
 
     #add fonts
-    pdf.add_font(family='GothamLight', style='', fname='pdf-creation/font/GothamLight.ttf', uni='DEPRECATED')
-    pdf.add_font(family='GothamLight', style='B', fname='pdf-creation/font/GothamMedium.ttf', uni='DEPRECATED')
+    pdf.add_font(family='GothamLight', style='', fname='pdf_creation/font/GothamLight.ttf', uni='DEPRECATED')
+    pdf.add_font(family='GothamLight', style='B', fname='pdf_creation/font/GothamMedium.ttf', uni='DEPRECATED')
     #sets font type and size of table text
     pdf.set_font('GothamLight', '', 10)
     pdf.set_text_color(0, 0, 0)
@@ -123,18 +136,12 @@ for repname in replst:
                 ###colors are a little sus so ill change them later
                 ###also will need to change bg img
 
-#saving file locally
-#pdf.output('{name}.pdf'.format(name=repname))
+    IN_FILEPATH = "pdf_creation/FY_page_1.pdf"
+    ON_PAGE_INDEX = 1  # Index at which the page will be inserted (starts at zero)
 
-def second_page(): 
-    return io.BytesIO(pdf.output())
+    merger = PdfMerger()
+    merger.merge(position=0, fileobj=IN_FILEPATH)
+    merger.merge(position=ON_PAGE_INDEX, fileobj=second_page(pdf))
+    merger.write('{name}.pdf'.format(name=repname))
 
-###Merge pages here
-
-IN_FILEPATH = "pdf-creation/FY_page_1.pdf"
-ON_PAGE_INDEX = 1  # Index at which the page will be inserted (starts at zero)
-
-merger = PdfMerger()
-merger.merge(position=0, fileobj=IN_FILEPATH)
-merger.merge(position=ON_PAGE_INDEX, fileobj=second_page())
-merger.write('{name}.pdf'.format(name=repname))
+# final_pdf()

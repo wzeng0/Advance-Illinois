@@ -10,9 +10,7 @@ class LegSheet:
         self.leg_senate_df = None
         self.ga_house_df = None
         self.ga_senate_df = None
-        self.house = None
-        self.senators = None
-        self.rep_names = None
+        self.rep_dict = {}
     
     def upload_leg(self, df):
         # Check for sheet_name 'House' or 'Senate'
@@ -34,88 +32,51 @@ class LegSheet:
             # Rename 'Type' column to 'District' and sort by 'District'
             # Below integrated from CSV processing team
 
-            #need to add new senate assignment too
-            columns = columns + ['New House Assignment', 'SCHOOL DISTRICT']
-            new_columns=self.leg_house_df[columns].columns.values.tolist()
-            new_columns[4] = "District"
-            print(new_columns)
-            self.leg_house_df[columns].values = new_columns 
-            print(self.leg_house_df[columns])
-            # print(new_df["New House Assignment"])
-            # print(new_df.columns.values.tolist())
-            # self.leg_house_df = self.leg_house_df[columns].rename(columns={'New House Assignment': "District"}).sort_values(by="District")
-            self.leg_house_df = self.leg_house_df[columns].sort_values(by="District")
-            print(self.leg_house_df[columns])
+            # Rename 'New House Assignment' to 'District' and sort by 'District'
+            self.leg_house_df = self.leg_house_df[columns + ['New House Assignment', 'SCHOOL DISTRICT', '% OF FULL \nFUNDING']]
+            self.leg_house_df.rename(columns={'New House Assignment': 'District'}, inplace=True)
+            self.leg_house_df.sort_values('District', inplace=True)
+
             self.ga_house_df = self.ga_house_df[['Representative', 'District']]
-
             house_names = self.ga_house_df['Representative'].values
-            self.house = pd.merge(self.ga_house_df, self.leg_house_df, on='District')
-            self.house = self.house.drop(['District'], axis=1).drop_duplicates()
 
-            '''
-            cps_house = self.house.loc[self.house['SCHOOL DISTRICT'] == 'CITY OF CHICAGO SCHOOL DIST 299']
-            cps_house_index = self.house.loc[self.house['SCHOOL DISTRICT'] == 'CITY OF CHICAGO SCHOOL DIST 299'].index
-            cps_house_df = cps_house
-            self.house = self.house.drop(cps_house_index)
-            '''
+            # Merge based on 'District', dropping duplicates
+            house = pd.merge(self.leg_house_df, self.ga_house_df, on='District', how='inner').drop_duplicates()
+            house.drop(columns=['District'], axis=1, inplace=True)
 
-            house_df_list = []
-            for name in house_names:
-                empty_df = pd.DataFrame({})
-                empty_df = self.house_df(name)
-                ### I don't know if the following code works
-                #empty_df.sort_values(by = ["% OF FULL \nFUNDING"], ascending = True)
-                house_df_list.append(empty_df)
-            #code is able to complete above for loop before stopping and saying New Senate and New House assignment not in index...
-
-            self.leg_senate_df = self.leg_senate_df[columns].rename(columns={"New Senate Assignment": "District"}).sort_values(by="District")
+            
+            # Senate
+            self.leg_senate_df = self.leg_senate_df[columns + ['New Senate Assignment', 'SCHOOL DISTRICT', '% OF FULL \nFUNDING']]
+            self.leg_senate_df.rename(columns={'New Senate Assignment': 'District'}, inplace=True)
             self.ga_senate_df = self.ga_senate_df[['Senator', 'District']]
             sen_names = self.ga_senate_df['Senator'].values
-            self.senators = pd.merge(self.ga_senate_df, self.leg_senate_df, on='District')
-            self.senators = self.senators.drop(['District'], axis=1).drop_duplicates()
 
-            '''
-            cps_senators = self.senators.loc[self.senators['SCHOOL DISTRICT'] == 'CITY OF CHICAGO SCHOOL DIST 299']
-            cps_senators_index = self.senators.loc[self.senators['SCHOOL DISTRICT'] == 'CITY OF CHICAGO SCHOOL DIST 299'].index
-            cps_senators_df = cps_senators
-            self.senators = self.senators.drop(cps_senators_index)
-            '''
+            senators = pd.merge(self.leg_senate_df, self.ga_senate_df, on='District', how='inner').drop_duplicates()
+            senators.drop(columns=['District'], axis=1, inplace=True)
 
-            sen_df_list = []
-            for name in sen_names:
-                empty_df = pd.DataFrame({})
-                ### I don't know if the following code works
-                #empty_df = self.sen_df(name).sort_values(by = ["% OF FULL \nFUNDING"], ascending = True)
-                sen_df_list.append(empty_df)
 
-            '''
-            chicago_sen = cps_senators_df['Senator'].values[0]
-            chicago_combined = cps_house_df
-            chicago_combined['Senator'] = chicago_sen
-            print('chicago_combined')
-            print(chicago_combined)
-            '''
+            # Chicago Public Schools
+            cps_house = house.loc[house['SCHOOL DISTRICT'] == 'CITY OF CHICAGO SCHOOL DIST 299']
+            cps_house_index = cps_house.index
+            house.drop(cps_house_index, inplace=True)
 
-            # Combine sen_names and house_names into one list
-            self.rep_names = house_names.tolist() + sen_names.tolist()
+
+            # Create dictionary of dataframes for each representative
+            for rep in house_names:
+                rep_df = house[house['Representative'] == rep].sort_values(by = ['% OF FULL \nFUNDING'], ascending = True)
+                self.rep_dict[rep] = rep_df
+
+            for sen in sen_names:
+                sen_df = senators[senators['Senator'] == sen].sort_values(by = ['% OF FULL \nFUNDING'], ascending = True)
+                self.rep_dict[sen] = sen_df
             
-            house_df_dict = {name: self.house_df(name) for name in house_names[:2]}
-            sen_df_dict = {name: self.sen_df(name) for name in sen_names}
-            rep_dict = {**house_df_dict, **sen_df_dict}
+            print(self.rep_dict)
 
-            create_all_pdf(house_df_dict) #creates 2 pdfs for testing purposes
+            #create_all_pdf(house_df_dict) #creates 2 pdfs for testing purposes
 
         except Exception as e:
             print(f'Error processing data: {e}')
             return
-        
-    def house_df(self, name):
-        '''takes representative name and returns their info from house dataframe'''
-        return self.house.loc[self.house['Representative'] == name]
-    
-    def sen_df(self, name):
-        '''takes senator name and returns their info from senate dataframe'''
-        return self.senators.loc[self.senators['Senator'] == name]
     
     # def create_pdf(self):
     #     pdf_creator = final_pdf()

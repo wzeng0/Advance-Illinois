@@ -35,8 +35,8 @@ class LegSheet:
             # Below integrated from CSV processing team
 
             #need to add new senate assignment too
-            columns = columns + ['New House Assignment', 'SCHOOL DISTRICT']
-            self.leg_house_df = self.leg_house_df[columns].rename(columns={'New House Assignment': "District"}).sort_values(by="District")
+            columns = columns + ['Type', 'SCHOOL DISTRICT']
+            self.leg_house_df = self.leg_house_df[columns].rename(columns={'Type': "District"}).sort_values(by="District")
             self.ga_house_df = self.ga_house_df[['Representative', 'District']]
 
             house_names = self.ga_house_df['Representative'].values
@@ -60,7 +60,7 @@ class LegSheet:
                 house_df_list.append(empty_df)
             #code is able to complete above for loop before stopping and saying New Senate and New House assignment not in index...
 
-            self.leg_senate_df = self.leg_senate_df[columns].rename(columns={"New Senate Assignment": "District"}).sort_values(by="District")
+            self.leg_senate_df = self.leg_senate_df[columns].rename(columns={"Type": "District"}).sort_values(by="District")
             self.ga_senate_df = self.ga_senate_df[['Senator', 'District']]
             sen_names = self.ga_senate_df['Senator'].values
             self.senators = pd.merge(self.ga_senate_df, self.leg_senate_df, on='District')

@@ -150,18 +150,20 @@ def final_pdf(repname, df):
 
 def get_all_pdf_bytes(dict):
     bytes_lst = []
+    names_lst = []
     for repname, df in dict.items():
         bytes_lst.append(final_pdf(repname, df))
-    return bytes_lst
+        names_lst.append(repname)
+    return (bytes_lst, names_lst)
 
 def get_all_pdf(dict):
-    byte_list = get_all_pdf_bytes(dict)
+    (byte_list, name_list) = get_all_pdf_bytes(dict)
     zip_io = io.BytesIO()
 
     # Create a zip archive containing all the PDF files
     with zipfile.ZipFile(zip_io, "w") as zipf:
         for i, pdf_data in enumerate(byte_list):
-            zipf.writestr(f"pdf_{i}.pdf", pdf_data.getvalue())
+            zipf.writestr(f"{name_list[i]}.pdf", pdf_data.getvalue())
 
     zip_io.seek(0)  # Seek back to the beginning of the BytesIO object
     return zip_io

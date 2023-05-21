@@ -30,16 +30,16 @@ class LegSheet:
             raise Exception('Invalid Excel file: missing sheets "103rd House" or "103rd Senate"')
     
     def process(self, columns: list):
-        print('processing')
         try:
             # Rename 'Type' column to 'District' and sort by 'District'
             # Below integrated from CSV processing team
+
+            #need to add new senate assignment too
             columns = columns + ['New House Assignment', 'SCHOOL DISTRICT']
             self.leg_house_df = self.leg_house_df[columns].rename(columns={'New House Assignment': "District"}).sort_values(by="District")
             self.ga_house_df = self.ga_house_df[['Representative', 'District']]
 
             house_names = self.ga_house_df['Representative'].values
-
             self.house = pd.merge(self.ga_house_df, self.leg_house_df, on='District')
             self.house = self.house.drop(['District'], axis=1).drop_duplicates()
 
@@ -56,8 +56,9 @@ class LegSheet:
                 empty_df = self.house_df(name)
                 ### I don't know if the following code works
                 empty_df.sort_values(by = ["% OF FULL \nFUNDING"], ascending = True)
-                print(empty_df.columns.values)
+                #print(empty_df.columns.values)
                 house_df_list.append(empty_df)
+            #code is able to complete above for loop before stopping and saying New Senate and New House assignment not in index...
 
             self.leg_senate_df = self.leg_senate_df[columns].rename(columns={"New Senate Assignment": "District"}).sort_values(by="District")
             self.ga_senate_df = self.ga_senate_df[['Senator', 'District']]
@@ -80,7 +81,6 @@ class LegSheet:
                 empty_df = self.sen_df(name).sort_values(by = ["% OF FULL \nFUNDING"], ascending = True)
                 print(empty_df)
                 sen_df_list.append(empty_df)
-
 
             '''
             chicago_sen = cps_senators_df['Senator'].values[0]

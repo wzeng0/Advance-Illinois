@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from pdf_creation.create_pdf import get_all_pdf
 import pandas as pd
 import uuid
 
@@ -90,10 +91,10 @@ class LegSheet:
             cps_senators = [sen for sen in senators_unique if (senators[senators['Senator'] == sen]['SCHOOL DISTRICT'] == 'CITY OF CHICAGO SCHOOL DIST 299').all()]
             
             for rep in cps_representatives:
-                self.rep_dict[rep] = self.cps_df
+                self.rep_dict[rep] = self.cps_df.head(5)
 
             for sen in cps_senators:
-                self.rep_dict[sen] = self.cps_df
+                self.rep_dict[sen] = self.cps_df.head(5)
 
         except Exception as e:
             print(f'Error processing data: {e}')

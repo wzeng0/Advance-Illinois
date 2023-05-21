@@ -73,8 +73,10 @@ const UploadWizard = ({ sessionUuid }) => {
         `http://localhost:8000/download/${sessionUuid}`,
         { responseType: "blob" }
       );
-      const blob = new Blob([response.data], { type: "application/pdf" });
-      SaveAs(blob, `${sessionUuid}.pdf`);
+      const blob = new Blob([response.data], { type: "application/zip" });
+      console.log("blob received")
+      SaveAs(blob, `${sessionUuid}.zip`);
+      console.log("Download successful")
     } catch (error) {
       console.error("Error downloading file", error);
     }

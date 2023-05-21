@@ -52,9 +52,10 @@ def second_page(pdf):
 ###Merge pages here
 
 def create_all_pdf(dict):
+    bytes_lst = []
     for repname, df in dict.items():
-        final_pdf(repname, df)
-
+        bytes_lst.append(final_pdf(repname, df))
+    return bytes_lst
 
 def final_pdf(repname, df):
     ###will replace with different variables when iterating through the dataframes
@@ -142,6 +143,7 @@ def final_pdf(repname, df):
     merger = PdfMerger()
     merger.merge(position=0, fileobj=IN_FILEPATH)
     merger.merge(position=ON_PAGE_INDEX, fileobj=second_page(pdf))
-    merger.write('{name}.pdf'.format(name=repname))
-
-# final_pdf()
+    output_stream = io.BytesIO()
+    merger.write(output_stream)
+    #merger.write('{name}.pdf'.format(name=repname))
+    return output_stream

@@ -6,3 +6,4 @@ PyPDF2
 typing
 python-multipart
 openpyxl
+zipfile

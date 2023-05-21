@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-from pdf_creation.create_pdf import create_all_pdf
 import pandas as pd
 import uuid
 
@@ -71,6 +70,8 @@ class LegSheet:
                 self.rep_dict[sen] = sen_df
             
             print(self.rep_dict)
+
+            return self.rep_dict
 
             #create_all_pdf(house_df_dict) #creates 2 pdfs for testing purposes
 

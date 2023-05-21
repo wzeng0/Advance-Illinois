@@ -51,7 +51,7 @@ def second_page(pdf):
 
 ###Merge pages here
 
-def create_all_pdf(dict):
+def get_all_pdf_bytes(dict):
     bytes_lst = []
     for repname, df in dict.items():
         bytes_lst.append(final_pdf(repname, df))

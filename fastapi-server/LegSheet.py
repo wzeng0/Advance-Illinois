@@ -35,8 +35,8 @@ class LegSheet:
             # Below integrated from CSV processing team
 
             #need to add new senate assignment too
-            columns = columns + ['Type', 'SCHOOL DISTRICT']
-            self.leg_house_df = self.leg_house_df[columns].rename(columns={'Type': "District"}).sort_values(by="District")
+            columns = columns + ['New House Assignment', 'SCHOOL DISTRICT']
+            self.leg_house_df = self.leg_house_df[columns].rename(columns={'New House Assignment': "District"}).sort_values(by="District")
             self.ga_house_df = self.ga_house_df[['Representative', 'District']]
 
             house_names = self.ga_house_df['Representative'].values
@@ -55,12 +55,11 @@ class LegSheet:
                 empty_df = pd.DataFrame({})
                 empty_df = self.house_df(name)
                 ### I don't know if the following code works
-                empty_df.sort_values(by = ["% OF FULL \nFUNDING"], ascending = True)
-                #print(empty_df.columns.values)
+                #empty_df.sort_values(by = ["% OF FULL \nFUNDING"], ascending = True)
                 house_df_list.append(empty_df)
             #code is able to complete above for loop before stopping and saying New Senate and New House assignment not in index...
 
-            self.leg_senate_df = self.leg_senate_df[columns].rename(columns={"Type": "District"}).sort_values(by="District")
+            self.leg_senate_df = self.leg_senate_df[columns].rename(columns={"New Senate Assignment": "District"}).sort_values(by="District")
             self.ga_senate_df = self.ga_senate_df[['Senator', 'District']]
             sen_names = self.ga_senate_df['Senator'].values
             self.senators = pd.merge(self.ga_senate_df, self.leg_senate_df, on='District')
@@ -77,9 +76,7 @@ class LegSheet:
             for name in sen_names:
                 empty_df = pd.DataFrame({})
                 ### I don't know if the following code works
-                float(empty_df["% OF FULL \nFUNDING"][:-1])
-                empty_df = self.sen_df(name).sort_values(by = ["% OF FULL \nFUNDING"], ascending = True)
-                print(empty_df)
+                #empty_df = self.sen_df(name).sort_values(by = ["% OF FULL \nFUNDING"], ascending = True)
                 sen_df_list.append(empty_df)
 
             '''
@@ -96,9 +93,6 @@ class LegSheet:
             house_df_dict = {name: self.house_df(name) for name in house_names[:2]}
             sen_df_dict = {name: self.sen_df(name) for name in sen_names}
             rep_dict = {**house_df_dict, **sen_df_dict}
-
-            print('rep_dict')
-            print(rep_dict)
 
             create_all_pdf(house_df_dict) #creates 2 pdfs for testing purposes
 

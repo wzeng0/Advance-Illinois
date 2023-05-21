@@ -1,4 +1,5 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException, Form, Response
+from fastapi import FastAPI, UploadFile, HTTPException, Form
+from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 from LegSheet import SessionHandler
@@ -34,10 +35,6 @@ def new_form():
 async def upload(file: UploadFile = Form(...), sessionUuid: str = Form(...)):
     # Ensure the uploaded file is an Excel spreadsheet
     if file.filename.endswith('.xlsx'):
-        # df = pd.read_excel(await file.read(), sheet_name=None)
-        # leg_sheet = session.get_sheet(sessionUuid)
-        # leg_sheet.upload_leg(df)
-        # return {"status": "success"}
         try:
             df = pd.read_excel(await file.read(), sheet_name=None)
             leg_sheet = session.get_sheet(sessionUuid)
@@ -72,8 +69,7 @@ async def process_data(data: dict):
         # Retrieve the LegSheet object using the uuid provided by the user
         leg_sheet = session.get_sheet(sessionUuid)
         if leg_sheet:
-            full_dict = leg_sheet.process(columns)
-            session.delete_sheet(sessionUuid)
+            leg_sheet.process(columns)
             return {"status": "success"}
         else:
             raise HTTPException(status_code=404, detail="File not found.")
@@ -81,28 +77,26 @@ async def process_data(data: dict):
         raise HTTPException(status_code=400, detail="Failed to process data.")
     
 
-@app.get("/download-pdf-batch")
-async def process_data(data: dict):
-    try:
-        sessionUuid = data.get('sessionUuid')
-        columns = data.get('columns', [])
-        
-        # Retrieve the LegSheet object using the uuid provided by the user
-        leg_sheet = session.get_sheet(sessionUuid)
-        if leg_sheet:
-            full_dict = leg_sheet.process(columns)
-            output_directory = "/pdf"
-            # Create a temporary zip file to store the PDFs
-            zip_file_path = "/pdf_batch.zip"
+@app.get("/download/{sessionUuid}")
+async def download(sessionUuid: str):
+    leg_sheet = session.get_sheet(sessionUuid)
+    if leg_sheet:
+        print('Legsheet found')
+        pdf_data = leg_sheet.generate_pdf()
 
-            get_all_pdf(full_dict, output_directory, zip_file_path)
+        # Create the zip file in memory.
+        zip_io = get_all_pdf(leg_sheet.rep_dict)
 
-            session.delete_sheet(sessionUuid)
-            return {"status": "success"}
-        else:
-            raise HTTPException(status_code=404, detail="File not found.")
-    except Exception as e:
-        raise HTTPException(status_code=400, detail="Failed to process data.")
+        # Stream the zip file to the client.
+        response = StreamingResponse(zip_io,
+                                     media_type="application/zip",
+                                     headers={"Content-Disposition": f'attachment; filename={sessionUuid}.zip'})
+
+        session.delete_sheet(sessionUuid)
+        return response
+    else:
+        raise HTTPException(status_code=404, detail='File not found.')
+
 
 if __name__ == '__main__':
     uvicorn.run('app:app', host='localhost', port=8000, reload=True)

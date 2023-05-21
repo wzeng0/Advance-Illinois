@@ -142,7 +142,9 @@ def final_pdf(repname, df):
     merger.merge(position=0, fileobj=IN_FILEPATH)
     merger.merge(position=ON_PAGE_INDEX, fileobj=second_page(pdf))
     output_stream = io.BytesIO()
-    # merger.write(output_stream)
+    # Below line was previously commented out
+    merger.write(output_stream)
+    output_stream.seek(0)
     #merger.write('{name}.pdf'.format(name=repname))
     return output_stream
 
@@ -152,35 +154,20 @@ def get_all_pdf_bytes(dict):
         bytes_lst.append(final_pdf(repname, df))
     return bytes_lst
 
-def get_all_pdf(dict, output_directory, zip_file_path, response: Response):
+def get_all_pdf(dict):
     byte_list = get_all_pdf_bytes(dict)
-
-    # Generate individual PDFs
-    for i, pdf_data in enumerate(byte_list):
-        output_path = os.path.join(output_directory, f"pdf_{i}.pdf")
-        generate_pdf(pdf_data, output_path)
+    zip_io = io.BytesIO()
 
     # Create a zip archive containing all the PDF files
-    with zipfile.ZipFile(zip_file_path, "w") as zipf:
-        for i in range(len(byte_list)):
-            pdf_path = os.path.join(output_directory, f"pdf_{i}.pdf")
-            zipf.write(pdf_path, arcname=f"pdf_{i}.pdf")
+    with zipfile.ZipFile(zip_io, "w") as zipf:
+        for i, pdf_data in enumerate(byte_list):
+            zipf.writestr(f"pdf_{i}.pdf", pdf_data.getvalue())
 
-    # Set the response headers for file download
-    response.headers["Content-Disposition"] = 'attachment; filename="pdf_batch.zip"'
-    response.headers["Content-Type"] = "application/zip"
+    zip_io.seek(0)  # Seek back to the beginning of the BytesIO object
+    return zip_io
 
-    # Stream the zip file to the response
-    with open(zip_file_path, "rb") as file:
-        content = file.read()
-        response.body = content
-
-    # Clean up the temporary zip file and individual PDFs
-    os.remove(zip_file_path)
-    for i in range(len(byte_list)):
-        pdf_path = os.path.join(output_directory, f"pdf_{i}.pdf")
-        os.remove(pdf_path)
-
+'''
 def generate_pdf(pdf_data, output_path):
     with open(output_path, "wb") as file: 
         file.write(pdf_data.getvalue()) 
+'''

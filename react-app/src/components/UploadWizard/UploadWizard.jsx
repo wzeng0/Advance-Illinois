@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { ColorlibConnector, ColorlibStepIcon } from "./styles";
 import axios from "axios";
+import { SaveAs } from "@mui/icons-material";
 
 const steps = ["Upload Sheets", "Select Columns", "Download"];
 const columnNames = [
@@ -63,6 +64,19 @@ const UploadWizard = ({ sessionUuid }) => {
       setActiveStep(2); // Move to step 3 after data processing
     } catch (error) {
       console.error("Error submitting user selection", error);
+    }
+  };
+
+  const handleDownload = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/download/${sessionUuid}`,
+        { responseType: "blob" }
+      );
+      const blob = new Blob([response.data], { type: "application/pdf" });
+      SaveAs(blob, `${sessionUuid}.pdf`);
+    } catch (error) {
+      console.error("Error downloading file", error);
     }
   };
 
@@ -132,9 +146,14 @@ const UploadWizard = ({ sessionUuid }) => {
       )}
 
       {activeStep === 2 && (
-        <Typography variant="h5" align="center">
-          Thank you!
-        </Typography>
+        <>
+          <Typography variant="h5" align="center" sx={{marginTop: "2rem", marginBottom: "2rem"}}>
+            Thank you! Click below to begin your download.
+          </Typography>
+          <Button variant="contained" onClick={handleDownload} sx={{marginLeft: "auto", marginRight: "auto"}}>
+            Download File
+          </Button>
+        </>
       )}
     </div>
   );

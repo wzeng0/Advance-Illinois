@@ -76,13 +76,6 @@ class LegSheet:
             house.drop(drop_indices_rep, inplace=True)
             senators.drop(drop_indices_sen, inplace=True)
 
-            '''
-            # Chicago Public Schools
-            cps_house = house.loc[house['SCHOOL DISTRICT'] == 'CITY OF CHICAGO SCHOOL DIST 299']
-            cps_house_index = cps_house.index
-            house.drop(cps_house_index, inplace=True)
-            '''
-
             # Create dictionary of dataframes for each representative
             for rep in house_names:
                 rep_df = house[house['Representative'] == rep].sort_values(by = ['% OF FULL \nFUNDING'], ascending = True)
@@ -91,14 +84,6 @@ class LegSheet:
             for sen in sen_names:
                 sen_df = senators[senators['Senator'] == sen].sort_values(by = ['% OF FULL \nFUNDING'], ascending = True)
                 self.rep_dict[sen] = sen_df
-
-            '''
-            # Add CPS representatives to rep_dict
-            cps_representatives = cps_house['Representative'].unique()
-            for rep in cps_representatives:
-                print(rep)
-                self.rep_dict[rep] = self.cps_df
-            '''
 
             # Add CPS representatives to rep_dict ONLY if their entire district is CITY OF CHICAGO SCHOOL DIST 299
             cps_representatives = [rep for rep in representatives if (house[house['Representative'] == rep]['SCHOOL DISTRICT'] == 'CITY OF CHICAGO SCHOOL DIST 299').all()]
@@ -110,14 +95,17 @@ class LegSheet:
             for sen in cps_senators:
                 self.rep_dict[sen] = self.cps_df
 
-            #create_all_pdf(self.rep_dict) #creates 2 pdfs for testing purposes
-
         except Exception as e:
             print(f'Error processing data: {e}')
             return
     
-    # def create_pdf(self):
-    #     pdf_creator = final_pdf()
+    def generate_pdf(self):
+        try:
+            # Create pdf using self.rep_dict here
+            pass
+        except Exception as e:
+            print(f'Error generating PDF: {e}')
+            return
 
     def cleanup(self):
         # TODO: Implement cleanup logic

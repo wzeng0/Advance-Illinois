@@ -36,7 +36,16 @@ class LegSheet:
 
             #need to add new senate assignment too
             columns = columns + ['New House Assignment', 'SCHOOL DISTRICT']
-            self.leg_house_df = self.leg_house_df[columns].rename(columns={'New House Assignment': "District"}).sort_values(by="District")
+            new_columns=self.leg_house_df[columns].columns.values.tolist()
+            new_columns[4] = "District"
+            print(new_columns)
+            self.leg_house_df[columns].values = new_columns 
+            print(self.leg_house_df[columns])
+            # print(new_df["New House Assignment"])
+            # print(new_df.columns.values.tolist())
+            # self.leg_house_df = self.leg_house_df[columns].rename(columns={'New House Assignment': "District"}).sort_values(by="District")
+            self.leg_house_df = self.leg_house_df[columns].sort_values(by="District")
+            print(self.leg_house_df[columns])
             self.ga_house_df = self.ga_house_df[['Representative', 'District']]
 
             house_names = self.ga_house_df['Representative'].values

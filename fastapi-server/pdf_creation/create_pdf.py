@@ -1,7 +1,10 @@
+import os
+from fastapi import Response
 from fpdf import FPDF
 import pandas as pd
-import io, sys
+import io
 from PyPDF2 import PdfMerger, PdfReader
+import zipfile
 
 class PDF(FPDF):
     """
@@ -51,12 +54,6 @@ def second_page(pdf):
 
 ###Merge pages here
 
-def get_all_pdf_bytes(dict):
-    bytes_lst = []
-    for repname, df in dict.items():
-        bytes_lst.append(final_pdf(repname, df))
-    return bytes_lst
-
 def final_pdf(repname, df):
     ###will replace with different variables when iterating through the dataframes
     # replst = ["ABDELNASSER RASHID1"]
@@ -87,8 +84,9 @@ def final_pdf(repname, df):
 
     #gets col idx of % OF FULL FUNDING
     #using try and except to make sure value error doesn't break code?
+    # print(columns[0].index(""))
     try:
-        percent_col_idx = columns[0].index("% OF FULL FUNDING") 
+        percent_col_idx = columns[0].index("% OF FULL \nFUNDING") 
     except ValueError as ve:
         print("must have column % OF FULL FUNDING")
 
@@ -144,6 +142,45 @@ def final_pdf(repname, df):
     merger.merge(position=0, fileobj=IN_FILEPATH)
     merger.merge(position=ON_PAGE_INDEX, fileobj=second_page(pdf))
     output_stream = io.BytesIO()
-    merger.write(output_stream)
+    # merger.write(output_stream)
     #merger.write('{name}.pdf'.format(name=repname))
     return output_stream
+
+def get_all_pdf_bytes(dict):
+    bytes_lst = []
+    for repname, df in dict.items():
+        bytes_lst.append(final_pdf(repname, df))
+    return bytes_lst
+
+def get_all_pdf(dict, output_directory, zip_file_path, response: Response):
+    byte_list = get_all_pdf_bytes(dict)
+
+    # Generate individual PDFs
+    for i, pdf_data in enumerate(byte_list):
+        output_path = os.path.join(output_directory, f"pdf_{i}.pdf")
+        generate_pdf(pdf_data, output_path)
+
+    # Create a zip archive containing all the PDF files
+    with zipfile.ZipFile(zip_file_path, "w") as zipf:
+        for i in range(len(byte_list)):
+            pdf_path = os.path.join(output_directory, f"pdf_{i}.pdf")
+            zipf.write(pdf_path, arcname=f"pdf_{i}.pdf")
+
+    # Set the response headers for file download
+    response.headers["Content-Disposition"] = 'attachment; filename="pdf_batch.zip"'
+    response.headers["Content-Type"] = "application/zip"
+
+    # Stream the zip file to the response
+    with open(zip_file_path, "rb") as file:
+        content = file.read()
+        response.body = content
+
+    # Clean up the temporary zip file and individual PDFs
+    os.remove(zip_file_path)
+    for i in range(len(byte_list)):
+        pdf_path = os.path.join(output_directory, f"pdf_{i}.pdf")
+        os.remove(pdf_path)
+
+def generate_pdf(pdf_data, output_path):
+    with open(output_path, "wb") as file: 
+        file.write(pdf_data.getvalue()) 

@@ -56,11 +56,32 @@ class LegSheet:
             senators.drop(columns=['District'], axis=1, inplace=True)
 
 
+            # Modify Chicago Public Schools processing to only include districts that are entirely CITY OF CHICAGO SCHOOL DIST 299
+            representatives = house['Representative'].unique()
+            senators_unique = senators['Senator'].unique()
+
+            drop_indices_rep = []
+            drop_indices_sen = []
+
+            for rep in representatives:
+                rep_df = house[house['Representative'] == rep]
+                if (rep_df['SCHOOL DISTRICT'] == 'CITY OF CHICAGO SCHOOL DIST 299').all():
+                    drop_indices_rep.extend(rep_df.index.tolist())
+            
+            for sen in senators_unique:
+                sen_df = senators[senators['Senator'] == sen]
+                if (sen_df['SCHOOL DISTRICT'] == 'CITY OF CHICAGO SCHOOL DIST 299').all():
+                    drop_indices_sen.extend(sen_df.index.tolist())
+
+            house.drop(drop_indices_rep, inplace=True)
+            senators.drop(drop_indices_sen, inplace=True)
+
+            '''
             # Chicago Public Schools
             cps_house = house.loc[house['SCHOOL DISTRICT'] == 'CITY OF CHICAGO SCHOOL DIST 299']
             cps_house_index = cps_house.index
             house.drop(cps_house_index, inplace=True)
-
+            '''
 
             # Create dictionary of dataframes for each representative
             for rep in house_names:
@@ -71,16 +92,25 @@ class LegSheet:
                 sen_df = senators[senators['Senator'] == sen].sort_values(by = ['% OF FULL \nFUNDING'], ascending = True)
                 self.rep_dict[sen] = sen_df
 
+            '''
             # Add CPS representatives to rep_dict
             cps_representatives = cps_house['Representative'].unique()
             for rep in cps_representatives:
+                print(rep)
                 self.rep_dict[rep] = self.cps_df
+            '''
+
+            # Add CPS representatives to rep_dict ONLY if their entire district is CITY OF CHICAGO SCHOOL DIST 299
+            cps_representatives = [rep for rep in representatives if (house[house['Representative'] == rep]['SCHOOL DISTRICT'] == 'CITY OF CHICAGO SCHOOL DIST 299').all()]
+            cps_senators = [sen for sen in senators_unique if (senators[senators['Senator'] == sen]['SCHOOL DISTRICT'] == 'CITY OF CHICAGO SCHOOL DIST 299').all()]
             
-            #print(self.rep_dict['Don Harmon'])
+            for rep in cps_representatives:
+                self.rep_dict[rep] = self.cps_df
 
-            return self.rep_dict
+            for sen in cps_senators:
+                self.rep_dict[sen] = self.cps_df
 
-            #create_all_pdf(house_df_dict) #creates 2 pdfs for testing purposes
+            #create_all_pdf(self.rep_dict) #creates 2 pdfs for testing purposes
 
         except Exception as e:
             print(f'Error processing data: {e}')

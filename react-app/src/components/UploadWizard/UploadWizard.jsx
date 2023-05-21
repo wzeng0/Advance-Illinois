@@ -16,7 +16,6 @@ import axios from "axios";
 const steps = ["Upload Sheets", "Select Columns", "Download"];
 const columnNames = [
   "ENROLLMENT",
-  "% OF FULL \nFUNDING",
   "TOTAL GAP TO FULL FUNDING",
   "PER PUPIL GAP TO FULL FUNDING",
 ];

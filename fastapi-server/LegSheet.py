@@ -9,6 +9,7 @@ class LegSheet:
         self.leg_senate_df = None
         self.ga_house_df = None
         self.ga_senate_df = None
+        self.cps_df = None
         self.rep_dict = {}
     
     def upload_leg(self, df):
@@ -16,6 +17,7 @@ class LegSheet:
         if 'House' in df.keys() and 'Senate' in df.keys():
             self.leg_house_df = df['House']
             self.leg_senate_df = df['Senate']
+            self.cps_df = df['CPS Chart']
         else:
             raise Exception('Invalid Excel file: missing sheets "House" or "Senate"')
         
@@ -68,8 +70,13 @@ class LegSheet:
             for sen in sen_names:
                 sen_df = senators[senators['Senator'] == sen].sort_values(by = ['% OF FULL \nFUNDING'], ascending = True)
                 self.rep_dict[sen] = sen_df
+
+            # Add CPS representatives to rep_dict
+            cps_representatives = cps_house['Representative'].unique()
+            for rep in cps_representatives:
+                self.rep_dict[rep] = self.cps_df
             
-            print(self.rep_dict)
+            #print(self.rep_dict['Don Harmon'])
 
             return self.rep_dict
 

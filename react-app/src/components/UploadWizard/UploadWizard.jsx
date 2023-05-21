@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { ColorlibConnector, ColorlibStepIcon } from "./styles";
 import axios from "axios";
-import { SaveAs } from "@mui/icons-material";
+import { saveAs } from "file-saver";
 
 const steps = ["Upload Sheets", "Select Columns", "Download"];
 const columnNames = [
@@ -75,7 +75,7 @@ const UploadWizard = ({ sessionUuid }) => {
       );
       const blob = new Blob([response.data], { type: "application/zip" });
       console.log("blob received")
-      SaveAs(blob, `${sessionUuid}.zip`);
+      saveAs(blob, `${sessionUuid}.zip`);
       console.log("Download successful")
     } catch (error) {
       console.error("Error downloading file", error);

@@ -1,6 +1,6 @@
 fastapi
 uvicorn
-fpdf
+fpdf2
 pandas
 PyPDF2
 typing

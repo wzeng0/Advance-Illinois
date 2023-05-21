@@ -117,15 +117,15 @@ def final_pdf(repname, df):
                     percent = "moot"
                 
                 if percent != "moot": ### I know this is bad style so fix later
-                    if percent < 60: 
+                    if percent < .6: 
                         pdf.set_fill_color(172, 41, 0)
-                    elif 60 <= percent < 70:
+                    elif .60 <= percent < .7:
                         pdf.set_fill_color(245, 131, 76)
-                    elif 70 <= percent < 80:
+                    elif .70 <= percent < .8:
                         pdf.set_fill_color(249, 173, 86)
-                    elif 80 <= percent < 90:
+                    elif .80 <= percent < .9:
                         pdf.set_fill_color(240, 199, 110)
-                    elif 90 <= percent < 100:
+                    elif .90 <= percent < 1.0:
                         pdf.set_fill_color(154, 198, 151)
                     else:
                         pdf.set_fill_color(86, 181, 168)

@@ -134,7 +134,7 @@ def format(df):
             df['% OF FULL \nFUNDING'] = df['% OF FULL \nFUNDING'].apply(lambda x: x*100)
             df['% OF FULL \nFUNDING'] = df['% OF FULL \nFUNDING'].apply(int)
             df['% OF FULL \nFUNDING'] = df['% OF FULL \nFUNDING'].apply(str)
-            df['% OF FULL \nFUNDING'] = df['% OF FULL \nFUNDING'].apply(dollar_format)
+            df['% OF FULL \nFUNDING'] = df['% OF FULL \nFUNDING'].apply(lambda x: x+"%")
 
         #rounds to the nearest whole number and adds $ sign if applicable
         special_cols = ["ENROLLMENT", "TOTAL GAP TO FULL FUNDING", "PER PUPIL GAP TO FULL FUNDING"]
@@ -143,7 +143,7 @@ def format(df):
                 df[column] = df[column].apply(int)
                 if column != "ENROLLMENT":
                     df[column]=df[column].apply(str)
-                    df[column] = df[column].apply(lambda x: "$" + x)
+                    df[column] = df[column].apply(dollar_format)
     except Exception as e:
         print(f'Error formatting dataframe: {e}')
 

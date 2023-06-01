@@ -5,6 +5,7 @@ import pandas as pd
 import io
 from PyPDF2 import PdfMerger, PdfReader
 import zipfile
+import math 
 
 class PDF(FPDF):
     """
@@ -109,7 +110,8 @@ def final_pdf(repname, df):
                 #creating colors
                 if 0 < row_idx:
                     #percent total funding as an integer
-                    percent = int(row_lst[percent_col_idx]) 
+                    percent = float(row_lst[percent_col_idx])
+                    percent = math.ceil(percent)
                 else:
                     percent = "moot"
                 

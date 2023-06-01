@@ -86,6 +86,7 @@ class LegSheet:
             for sen in sen_names:
                 sen_df = senators[senators['Senator'] == sen].sort_values(by = ['% OF FULL \nFUNDING'], ascending = True)
                 sen_df.drop(columns=['Senator'], axis=1, inplace=True)
+                sen_df = format(sen_df)
                 self.rep_dict[sen.upper()] = sen_df
 
             # Add CPS representatives to rep_dict ONLY if their entire district is CITY OF CHICAGO SCHOOL DIST 299
@@ -94,11 +95,12 @@ class LegSheet:
             
             for rep in cps_representatives:
                 cpsrep_df = self.cps_df.head(5)
+                cpsrep_df = format(cpsrep_df)
                 self.rep_dict[rep.upper()] = cpsrep_df
 
             for sen in cps_senators:
                 cpssen_df = self.cps_df.head(5)
-                #cpssen_df.drop(columns=['Senator'], axis=1, inplace=True)
+                cpssen_df = format(cpssen_df)
                 self.rep_dict[sen.upper()] = cpssen_df
 
         except Exception as e:
@@ -120,14 +122,19 @@ class LegSheet:
 
 ###helper - will try to replace with more general logic
 def format(df):
+    """
+    Helper function to format all columns in table (if necessary)
+    """
     try:
         #makes school district the first column
         df = df[["SCHOOL DISTRICT"] + [col for col in df.columns if col != "SCHOOL DISTRICT"]]
-        #reformats the decimals into percentages without the percent sign
+        #reformats the decimals into string percentages
         if '% OF FULL \nFUNDING' in df.columns:
             df['% OF FULL \nFUNDING'] = df['% OF FULL \nFUNDING'].round(2)
             df['% OF FULL \nFUNDING'] = df['% OF FULL \nFUNDING'].apply(lambda x: x*100)
             df['% OF FULL \nFUNDING'] = df['% OF FULL \nFUNDING'].apply(int)
+            df['% OF FULL \nFUNDING'] = df['% OF FULL \nFUNDING'].apply(str)
+            df['% OF FULL \nFUNDING'] = df['% OF FULL \nFUNDING'].apply(dollar_format)
 
         #rounds to the nearest whole number and adds $ sign if applicable
         special_cols = ["ENROLLMENT", "TOTAL GAP TO FULL FUNDING", "PER PUPIL GAP TO FULL FUNDING"]
@@ -141,6 +148,20 @@ def format(df):
         print(f'Error formatting dataframe: {e}')
 
     return df
+
+def dollar_format(value):
+    """
+    Helper function to format the $ sign in columns.
+
+    Input:
+        value [str]: column value
+    
+    Returns [str]: formatted table value
+    """
+    if value[:1] == "-":
+        return "-$" + value[1:]
+    else:
+        return "$" + value
 
 class SessionHandler:
     def __init__(self):

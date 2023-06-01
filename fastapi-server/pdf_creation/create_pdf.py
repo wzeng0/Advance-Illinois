@@ -93,7 +93,7 @@ def final_pdf(repname, df):
     pdf.add_font(family='GothamBook', style='', fname='pdf_creation/font/GothamBook.ttf', uni='DEPRECATED')
     pdf.add_font(family='GothamBook', style='B', fname='pdf_creation/font/GothamMedium.ttf', uni='DEPRECATED')
     #sets font type and size of table text
-    pdf.set_font('GothamBook', '', 10)
+    pdf.set_font('GothamBook', '', 9)
     pdf.set_text_color(0, 0, 0)
 
     #constructing table
@@ -110,7 +110,7 @@ def final_pdf(repname, df):
                 #creating colors
                 if 0 < row_idx:
                     #percent total funding as an integer
-                    percent = float(row_lst[percent_col_idx])
+                    percent = float(row_lst[percent_col_idx][:-1])
                     percent = math.ceil(percent)
                 else:
                     percent = "moot"

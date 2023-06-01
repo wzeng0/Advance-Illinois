@@ -5,6 +5,7 @@ import pandas as pd
 import io
 from PyPDF2 import PdfMerger, PdfReader
 import zipfile
+import math 
 
 class PDF(FPDF):
     """
@@ -72,9 +73,8 @@ def final_pdf(repname, df):
     pdf = PDF(orientation = 'P', unit = 'mm', format = 'A4')
     pdf.set_title("REPRESENTATIVE {name}".format(name = repname))
     pdf.print_elements()
-    pdf.set_auto_page_break(True, 40) #may need to turn background images into 
-                                    #header and footer for this to work properly
-
+    pdf.set_auto_page_break(True, 38) 
+                                    
     #TABLE#
     df = df.applymap(str)  # Convert all data inside dataframe into string type
 
@@ -83,23 +83,21 @@ def final_pdf(repname, df):
     data = columns + rows  # Combine columns and rows in one list
 
     #gets col idx of % OF FULL FUNDING
-    #using try and except to make sure value error doesn't break code?
-    # print(columns[0].index(""))
+    #using try and except to make sure value error doesn't break code
     try:
         percent_col_idx = columns[0].index("% OF FULL \nFUNDING") 
     except ValueError as ve:
         print("must have column % OF FULL FUNDING")
 
     #add fonts
-    pdf.add_font(family='GothamLight', style='', fname='pdf_creation/font/GothamLight.ttf', uni='DEPRECATED')
-    pdf.add_font(family='GothamLight', style='B', fname='pdf_creation/font/GothamMedium.ttf', uni='DEPRECATED')
+    pdf.add_font(family='GothamBook', style='', fname='pdf_creation/font/GothamBook.ttf', uni='DEPRECATED')
+    pdf.add_font(family='GothamBook', style='B', fname='pdf_creation/font/GothamMedium.ttf', uni='DEPRECATED')
     #sets font type and size of table text
-    pdf.set_font('GothamLight', '', 10)
+    pdf.set_font('GothamBook', '', 10)
     pdf.set_text_color(0, 0, 0)
 
-    #constructing table, need to add more parameters
+    #constructing table
     with pdf.table(###find a way to adjust custom widths
-                ###cell_fill_mode="ROWS",
                 line_height=pdf.font_size * 1.5,
                 text_align="CENTER",
                 width=176) as table:
@@ -112,28 +110,26 @@ def final_pdf(repname, df):
                 #creating colors
                 if 0 < row_idx:
                     #percent total funding as an integer
-                    percent = float(row_lst[percent_col_idx][:-1]) 
+                    percent = float(row_lst[percent_col_idx])
+                    percent = math.ceil(percent)
                 else:
                     percent = "moot"
                 
                 if percent != "moot": ### I know this is bad style so fix later
-                    if percent < .6: 
+                    if percent < 60: 
                         pdf.set_fill_color(172, 41, 0)
-                    elif .60 <= percent < .7:
+                    elif 60 <= percent < 70:
                         pdf.set_fill_color(245, 131, 76)
-                    elif .70 <= percent < .8:
+                    elif 70 <= percent < 80:
                         pdf.set_fill_color(249, 173, 86)
-                    elif .80 <= percent < .9:
+                    elif 80 <= percent < 90:
                         pdf.set_fill_color(240, 199, 110)
-                    elif .90 <= percent < 1.0:
+                    elif 90 <= percent < 100:
                         pdf.set_fill_color(154, 198, 151)
                     else:
                         pdf.set_fill_color(86, 181, 168)
                 
                 row.cell(datum)
-                    
-                ###colors are a little sus so ill change them later
-                ###also will need to change bg img
 
     IN_FILEPATH = "pdf_creation/FY_page_1.pdf"
     ON_PAGE_INDEX = 1  # Index at which the page will be inserted (starts at zero)
@@ -167,9 +163,3 @@ def get_all_pdf(dict):
 
     zip_io.seek(0)  # Seek back to the beginning of the BytesIO object
     return zip_io
-
-'''
-def generate_pdf(pdf_data, output_path):
-    with open(output_path, "wb") as file: 
-        file.write(pdf_data.getvalue()) 
-'''

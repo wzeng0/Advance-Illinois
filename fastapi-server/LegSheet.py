@@ -98,7 +98,7 @@ class LegSheet:
 
             for sen in cps_senators:
                 cpssen_df = self.cps_df.head(5)
-                cpsrep_df.drop(columns=['Senator'], axis=1, inplace=True)
+                cpssen_df.drop(columns=['Senator'], axis=1, inplace=True)
                 self.rep_dict[sen] = cpssen_df
 
         except Exception as e:

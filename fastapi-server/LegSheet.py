@@ -45,7 +45,6 @@ class LegSheet:
             # Merge based on 'District', dropping duplicates
             house = pd.merge(self.leg_house_df, self.ga_house_df, on='District', how='inner').drop_duplicates()
             house.drop(columns=['District'], axis=1, inplace=True)
-
             
             # Senate
             self.leg_senate_df = self.leg_senate_df[columns + ['New Senate Assignment', 'SCHOOL DISTRICT', '% OF FULL \nFUNDING']]
@@ -80,10 +79,12 @@ class LegSheet:
             # Create dictionary of dataframes for each representative
             for rep in house_names:
                 rep_df = house[house['Representative'] == rep].sort_values(by = ['% OF FULL \nFUNDING'], ascending = True)
+                rep_df.drop(columns=['Representative'], axis=1, inplace=True)
                 self.rep_dict[rep] = rep_df
 
             for sen in sen_names:
                 sen_df = senators[senators['Senator'] == sen].sort_values(by = ['% OF FULL \nFUNDING'], ascending = True)
+                rep_df.drop(columns=['Senator'], axis=1, inplace=True)
                 self.rep_dict[sen] = sen_df
 
             # Add CPS representatives to rep_dict ONLY if their entire district is CITY OF CHICAGO SCHOOL DIST 299
@@ -91,10 +92,14 @@ class LegSheet:
             cps_senators = [sen for sen in senators_unique if (senators[senators['Senator'] == sen]['SCHOOL DISTRICT'] == 'CITY OF CHICAGO SCHOOL DIST 299').all()]
             
             for rep in cps_representatives:
-                self.rep_dict[rep] = self.cps_df.head(5)
+                cpsrep_df = self.cps_df.head(5)
+                cpsrep_df.drop(columns=['Representative'], axis=1, inplace=True)
+                self.rep_dict[rep] = cpsrep_df
 
             for sen in cps_senators:
-                self.rep_dict[sen] = self.cps_df.head(5)
+                cpssen_df = self.cps_df.head(5)
+                cpsrep_df.drop(columns=['Senator'], axis=1, inplace=True)
+                self.rep_dict[sen] = cpssen_df
 
         except Exception as e:
             print(f'Error processing data: {e}')

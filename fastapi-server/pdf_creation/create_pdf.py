@@ -91,7 +91,7 @@ def final_pdf(repname, df):
         print("must have column % OF FULL FUNDING")
 
     #add fonts
-    pdf.add_font(family='GothamLight', style='', fname='pdf_creation/font/GothamLight.ttf', uni='DEPRECATED')
+    pdf.add_font(family='GothamLight', style='', fname='pdf_creation/font/GothamBook.ttf', uni='DEPRECATED')
     pdf.add_font(family='GothamLight', style='B', fname='pdf_creation/font/GothamMedium.ttf', uni='DEPRECATED')
     #sets font type and size of table text
     pdf.set_font('GothamLight', '', 10)

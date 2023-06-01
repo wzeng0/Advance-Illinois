@@ -118,6 +118,18 @@ class LegSheet:
         print('cleaning up')
         pass
 
+###helper - will try to replace with more general logic
+def format(df):
+    try:
+        if '% OF FULL \nFUNDING' in df.columns:
+            pass
+        if '% OF FULL \nFUNDING' in df.columns:
+            df['% OF FULL \nFUNDING'] = df['% OF FULL \nFUNDING'].round(2)
+        if 'ENROLLMENT' in df.columns:
+            df['ENROLLMENT'] = df['ENROLLMENT'].round(0)
+    except Exception as e:
+        print(f'Error formatting dataframe: {e}')
+###revisit
 
 class SessionHandler:
     def __init__(self):

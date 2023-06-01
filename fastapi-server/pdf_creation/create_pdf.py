@@ -72,9 +72,8 @@ def final_pdf(repname, df):
     pdf = PDF(orientation = 'P', unit = 'mm', format = 'A4')
     pdf.set_title("REPRESENTATIVE {name}".format(name = repname))
     pdf.print_elements()
-    pdf.set_auto_page_break(True, 40) #may need to turn background images into 
-                                    #header and footer for this to work properly
-
+    pdf.set_auto_page_break(True, 38) 
+                                    
     #TABLE#
     df = df.applymap(str)  # Convert all data inside dataframe into string type
 
@@ -91,10 +90,10 @@ def final_pdf(repname, df):
         print("must have column % OF FULL FUNDING")
 
     #add fonts
-    pdf.add_font(family='GothamLight', style='', fname='pdf_creation/font/GothamBook.ttf', uni='DEPRECATED')
-    pdf.add_font(family='GothamLight', style='B', fname='pdf_creation/font/GothamMedium.ttf', uni='DEPRECATED')
+    pdf.add_font(family='GothamBook', style='', fname='pdf_creation/font/GothamBook.ttf', uni='DEPRECATED')
+    pdf.add_font(family='GothamBook', style='B', fname='pdf_creation/font/GothamMedium.ttf', uni='DEPRECATED')
     #sets font type and size of table text
-    pdf.set_font('GothamLight', '', 10)
+    pdf.set_font('GothamBook', '', 10)
     pdf.set_text_color(0, 0, 0)
 
     #constructing table, need to add more parameters
@@ -132,7 +131,6 @@ def final_pdf(repname, df):
                 
                 row.cell(datum)
                     
-                ###colors are a little sus so ill change them later
                 ###also will need to change bg img
 
     IN_FILEPATH = "pdf_creation/FY_page_1.pdf"

@@ -82,8 +82,7 @@ def final_pdf(repname, df):
     data = columns + rows  # Combine columns and rows in one list
 
     #gets col idx of % OF FULL FUNDING
-    #using try and except to make sure value error doesn't break code?
-    # print(columns[0].index(""))
+    #using try and except to make sure value error doesn't break code
     try:
         percent_col_idx = columns[0].index("% OF FULL \nFUNDING") 
     except ValueError as ve:
@@ -96,9 +95,8 @@ def final_pdf(repname, df):
     pdf.set_font('GothamBook', '', 10)
     pdf.set_text_color(0, 0, 0)
 
-    #constructing table, need to add more parameters
+    #constructing table
     with pdf.table(###find a way to adjust custom widths
-                ###cell_fill_mode="ROWS",
                 line_height=pdf.font_size * 1.5,
                 text_align="CENTER",
                 width=176) as table:
@@ -111,27 +109,25 @@ def final_pdf(repname, df):
                 #creating colors
                 if 0 < row_idx:
                     #percent total funding as an integer
-                    percent = float(row_lst[percent_col_idx][:-1]) 
+                    percent = int(row_lst[percent_col_idx]) 
                 else:
                     percent = "moot"
                 
                 if percent != "moot": ### I know this is bad style so fix later
-                    if percent < .6: 
+                    if percent < 60: 
                         pdf.set_fill_color(172, 41, 0)
-                    elif .60 <= percent < .7:
+                    elif 60 <= percent < 70:
                         pdf.set_fill_color(245, 131, 76)
-                    elif .70 <= percent < .8:
+                    elif 70 <= percent < 80:
                         pdf.set_fill_color(249, 173, 86)
-                    elif .80 <= percent < .9:
+                    elif 80 <= percent < 90:
                         pdf.set_fill_color(240, 199, 110)
-                    elif .90 <= percent < 1.0:
+                    elif 90 <= percent < 100:
                         pdf.set_fill_color(154, 198, 151)
                     else:
                         pdf.set_fill_color(86, 181, 168)
                 
                 row.cell(datum)
-                    
-                ###also will need to change bg img
 
     IN_FILEPATH = "pdf_creation/FY_page_1.pdf"
     ON_PAGE_INDEX = 1  # Index at which the page will be inserted (starts at zero)
@@ -165,9 +161,3 @@ def get_all_pdf(dict):
 
     zip_io.seek(0)  # Seek back to the beginning of the BytesIO object
     return zip_io
-
-'''
-def generate_pdf(pdf_data, output_path):
-    with open(output_path, "wb") as file: 
-        file.write(pdf_data.getvalue()) 
-'''

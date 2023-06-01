@@ -80,12 +80,13 @@ class LegSheet:
             for rep in house_names:
                 rep_df = house[house['Representative'] == rep].sort_values(by = ['% OF FULL \nFUNDING'], ascending = True)
                 rep_df.drop(columns=['Representative'], axis=1, inplace=True)
-                self.rep_dict[rep] = rep_df
-
+                rep_df = format(rep_df)
+                self.rep_dict[rep.upper()] = rep_df
+    
             for sen in sen_names:
                 sen_df = senators[senators['Senator'] == sen].sort_values(by = ['% OF FULL \nFUNDING'], ascending = True)
-                rep_df.drop(columns=['Senator'], axis=1, inplace=True)
-                self.rep_dict[sen] = sen_df
+                sen_df.drop(columns=['Senator'], axis=1, inplace=True)
+                self.rep_dict[sen.upper()] = sen_df
 
             # Add CPS representatives to rep_dict ONLY if their entire district is CITY OF CHICAGO SCHOOL DIST 299
             cps_representatives = [rep for rep in representatives if (house[house['Representative'] == rep]['SCHOOL DISTRICT'] == 'CITY OF CHICAGO SCHOOL DIST 299').all()]
@@ -93,13 +94,12 @@ class LegSheet:
             
             for rep in cps_representatives:
                 cpsrep_df = self.cps_df.head(5)
-                cpsrep_df.drop(columns=['Representative'], axis=1, inplace=True)
-                self.rep_dict[rep] = cpsrep_df
+                self.rep_dict[rep.upper()] = cpsrep_df
 
             for sen in cps_senators:
                 cpssen_df = self.cps_df.head(5)
-                cpssen_df.drop(columns=['Senator'], axis=1, inplace=True)
-                self.rep_dict[sen] = cpssen_df
+                #cpssen_df.drop(columns=['Senator'], axis=1, inplace=True)
+                self.rep_dict[sen.upper()] = cpssen_df
 
         except Exception as e:
             print(f'Error processing data: {e}')
@@ -121,15 +121,26 @@ class LegSheet:
 ###helper - will try to replace with more general logic
 def format(df):
     try:
-        if '% OF FULL \nFUNDING' in df.columns:
-            pass
+        #makes school district the first column
+        df = df[["SCHOOL DISTRICT"] + [col for col in df.columns if col != "SCHOOL DISTRICT"]]
+        #reformats the decimals into percentages without the percent sign
         if '% OF FULL \nFUNDING' in df.columns:
             df['% OF FULL \nFUNDING'] = df['% OF FULL \nFUNDING'].round(2)
-        if 'ENROLLMENT' in df.columns:
-            df['ENROLLMENT'] = df['ENROLLMENT'].round(0)
+            df['% OF FULL \nFUNDING'] = df['% OF FULL \nFUNDING'].apply(lambda x: x*100)
+            df['% OF FULL \nFUNDING'] = df['% OF FULL \nFUNDING'].apply(int)
+
+        #rounds to the nearest whole number and adds $ sign if applicable
+        special_cols = ["ENROLLMENT", "TOTAL GAP TO FULL FUNDING", "PER PUPIL GAP TO FULL FUNDING"]
+        for column in special_cols:
+            if column in df.columns:
+                df[column] = df[column].apply(int)
+                if column != "ENROLLMENT":
+                    df[column]=df[column].apply(str)
+                    df[column] = df[column].apply(lambda x: "$" + x)
     except Exception as e:
         print(f'Error formatting dataframe: {e}')
-###revisit
+
+    return df
 
 class SessionHandler:
     def __init__(self):

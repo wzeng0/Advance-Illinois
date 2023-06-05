@@ -55,7 +55,7 @@ This is an example of how to list things you need to use the software and how to
    ```sh
    pip3 install -r requirements.txt
    ```
-11. Run the server by running
+10. Run the server by running
    ```sh
    python3 app.py
    ```

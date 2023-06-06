@@ -96,11 +96,21 @@ def final_pdf(repname, df):
     pdf.set_font('GothamBook', '', 9)
     pdf.set_text_color(0, 0, 0)
 
-    #constructing table
-    with pdf.table(###find a way to adjust custom widths
-                line_height=pdf.font_size * 1.5,
-                text_align="CENTER",
-                width=176) as table:
+    num_other_cols = len(columns[0]) - 1
+    try:
+        other_width = 106 / num_other_cols
+        widths = [70] + [other_width for i in range(num_other_cols)]
+        align = ["LEFT"] + ["CENTER" for i in range(num_other_cols)]
+    except Exception as e:
+        print("Error processing columns:", e)
+        widths = None
+
+    #constructing table, need to add more parameters
+    with pdf.table(
+                    width=176,
+                    col_widths=widths,
+                    line_height=pdf.font_size * 1.5,
+                    text_align=align) as table:
 
         for row_idx, data_row in enumerate(data):
             if 0 < row_idx:

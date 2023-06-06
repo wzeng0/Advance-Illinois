@@ -87,9 +87,9 @@ for repname in replst:
 
     num_other_cols = len(columns[0]) - 1
     try:
-        other_width = 126 / num_other_cols
-        widths = [50] + [other_width for i in range(num_other_cols)]
-        align = ["LEFT"] + ["RIGHT" for i in range(num_other_cols)]
+        other_width = 106 / num_other_cols
+        widths = [70] + [other_width for i in range(num_other_cols)]
+        align = ["LEFT"] + ["CENTER" for i in range(num_other_cols)]
     except Exception as e:
         print("Error processing columns:", e)
         widths = None

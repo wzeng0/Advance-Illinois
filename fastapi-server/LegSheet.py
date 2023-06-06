@@ -141,8 +141,8 @@ def format(df):
         for column in special_cols:
             if column in df.columns:
                 df[column] = df[column].apply(int)
+                df[column] = df.apply(lambda x: "{:,}".format(x[column]), axis=1)
                 if column != "ENROLLMENT":
-                    df[column] = df.apply(lambda x: "{:,}".format(x[column]), axis=1)
                     df[column]= df[column].apply(str)
                     df[column] = df[column].apply(dollar_format)
     except Exception as e:

@@ -23,8 +23,8 @@ class PDF(FPDF):
         """
         Creates separate formatting for header
         """
-        self.image('pdf-creation/samplepdf-image.png', x = 0, y = 0, w = 210, h = 297)
-        self.add_font(family='Gotham', style='B', fname='pdf-creation/font/GothamBold.ttf', uni='DEPRECATED')
+        self.image('fastapi-server/pdf-creation/samplepdf-image.png', x = 0, y = 0, w = 210, h = 297)
+        self.add_font(family='Gotham', style='B', fname='fastapi-server/pdf-creation/font/GothamBold.ttf', uni='DEPRECATED')
         self.set_font("Gotham", "B", 12)
         self.set_text_color(240, 86.5, 41)
         self.set_fill_color(255, 255, 255)
@@ -67,7 +67,7 @@ for repname in replst:
     #TABLE#
     df = df.applymap(str)  # Convert all data inside dataframe into string type
 
-    columns = [list(df)]  # Get list of dataframe columns                                                      
+    columns = [list(df)]  # Get list of dataframe columns                                                 
     rows = df.values.tolist()  # Get list of dataframe rows
     data = columns + rows  # Combine columns and rows in one list
 
@@ -79,18 +79,27 @@ for repname in replst:
         print("must have column % OF FULL FUNDING")
 
     #add fonts
-    pdf.add_font(family='GothamLight', style='', fname='pdf-creation/font/GothamLight.ttf', uni='DEPRECATED')
-    pdf.add_font(family='GothamLight', style='B', fname='pdf-creation/font/GothamMedium.ttf', uni='DEPRECATED')
+    pdf.add_font(family='GothamLight', style='', fname='fastapi-server/pdf-creation/font/GothamLight.ttf', uni='DEPRECATED')
+    pdf.add_font(family='GothamLight', style='B', fname='fastapi-server/pdf-creation/font/GothamMedium.ttf', uni='DEPRECATED')
     #sets font type and size of table text
     pdf.set_font('GothamLight', '', 10)
     pdf.set_text_color(0, 0, 0)
 
+    num_other_cols = len(columns[0]) - 1
+    try:
+        other_width = 126 / num_other_cols
+        widths = [50] + [other_width for i in range(num_other_cols)]
+        align = ["LEFT"] + ["RIGHT" for i in range(num_other_cols)]
+    except Exception as e:
+        print("Error processing columns:", e)
+        widths = None
+
     #constructing table, need to add more parameters
-    with pdf.table(###find a way to adjust custom widths
-                ###cell_fill_mode="ROWS",
-                line_height=pdf.font_size * 1.5,
-                text_align="CENTER",
-                width=176) as table:
+    with pdf.table(
+                    width=176,
+                    col_widths=widths,
+                    line_height=pdf.font_size * 1.5,
+                    text_align=align) as table:
 
         for row_idx, data_row in enumerate(data):
             if 0 < row_idx:
@@ -131,7 +140,7 @@ def second_page():
 
 ###Merge pages here
 
-IN_FILEPATH = "pdf-creation/FY_page_1.pdf"
+IN_FILEPATH = "fastapi-server/pdf-creation/FY_page_1.pdf"
 ON_PAGE_INDEX = 1  # Index at which the page will be inserted (starts at zero)
 
 merger = PdfMerger()

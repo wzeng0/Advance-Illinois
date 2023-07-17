@@ -8,7 +8,7 @@ pdf for Chicago legislators that show data corresponding to each individual's di
 ### Built With
 
 * React
-* Flask
+* FastAPI
 
 ## Getting Started
 
